@@ -6,6 +6,9 @@ const mongoose = require('mongoose')
 const flash = require('connect-flash')
 const session = require('express-session')
 const app = express()
+//Importando rotas
+const user = require('./routes/user')
+app.use('/user', user)
 //Configurações
     //Sessão
     app.use(session({
@@ -28,6 +31,7 @@ const app = express()
     app.get('/', (req, res) => {
         res.render('index.handlebars')
     })
+
 //Conexão
 const port = 2023
 app.listen(2023, () => console.log(`Servidor ativo na porta ${port}`))

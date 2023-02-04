@@ -1,3 +1,95 @@
-h1 {
-    color: red;
+/*
+Paleta de cores:
+verdinho: #98CE52
+azul: #3641B7
+cinza: #3E3138
+verde: #012E31
+preto: #0A1517
+*/
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"); /*Bootstrap icons*/
+html {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0 10%;
+    background-color: #3E3138;
+}
+/*Popup*/
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 2%;
+    height: 40vh;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+.popup div {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+/*Topbar*/
+.topbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    margin: 0;
+    left: 0;
+    padding: 0 10%;
+    width: 80%;
+    position: sticky;
+    position: absolute;
+    background-color: #012E31;
+
+}
+.topbar h1 {
+    width: 30%;
+}
+.navbar {
+    width: 50%;
+    text-align: end;
+}
+.topbar .navbar a {
+    padding: 10px 10px;
+    border-top: 5px solid transparent;
+    margin-left: 20px;
+    color: white;
+    text-decoration: none;
+}
+.topbar .navbar a:hover {
+    overflow: visible;
+    border-color: #3641B7;
+}
+/*Estilos reutilizáveis*/
+.btn {
+    color: white;
+    text-decoration: none;
+    background-color: #3641B7;
+    padding: 15px 10px;
+    border-radius: 10px;
+}
+.link {
+    color: #0000FF;
+}
+.link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.inline {
+    display: inline;
 }
