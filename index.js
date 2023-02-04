@@ -6,9 +6,6 @@ const mongoose = require('mongoose')
 const flash = require('connect-flash')
 const session = require('express-session')
 const app = express()
-//Importando rotas
-const user = require('./routes/user')
-app.use('/user', user)
 //Configurações
     //Sessão
     app.use(session({
@@ -17,6 +14,9 @@ app.use('/user', user)
         saveUninitialized: true,
         cookie: {maxAge: 24 * 60 * 60 * 1000}
     }))
+    //Express
+    app.use(express.urlencoded({extended: true})) //É necessário para acessar itens através do método http
+    app.use(express.json())
     //Mongoose
     mongoose.set('strictQuery', true)
         //Ao se conectar deve ser usado a string 'mongodb://0.0.0.0:27017' no lugar de 'mongodb://localhost:27017' em alguns dipositivos
@@ -31,7 +31,9 @@ app.use('/user', user)
     app.get('/', (req, res) => {
         res.render('index.handlebars')
     })
-
+    //user(importando '/user')
+    const user = require('./routes/user')
+    app.use('/user', user)
 //Conexão
 const port = 2023
 app.listen(2023, () => console.log(`Servidor ativo na porta ${port}`))

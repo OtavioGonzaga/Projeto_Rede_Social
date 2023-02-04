@@ -12,10 +12,32 @@ html {
     padding: 0;
 }
 body {
+    color: white;
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0 10%;
-    background-color: #3E3138;
+    background-color: #0d1117;
+}
+hr {
+    border-top: .01px solid white;
+    width: 80%;
+}
+form {
+    margin: 20px 0;
+    text-align: left;
+    display: flex;
+    align-items: flex-start;
+    width: 80%;
+    flex-direction: column;
+}
+label, input {
+    width: 100%;
+}
+input {
+    padding: 2% 1%;
+    font-size: 110%;
+    margin: 1% 0 2%;
+    border-radius: 10px;
 }
 /*Popup*/
 .popup {
@@ -23,23 +45,17 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
+    background-color: #161b22;
     border: 1px solid black;
     border-radius: 10px;
-    padding: 2%;
-    height: 40vh;
+    padding: 10px;
+    width: 40%;
+    height: auto;
     display: flex;
     flex-flow: column wrap;
     align-items: center;
     justify-content: space-between;
     text-align: center;
-}
-.popup div {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
 }
 /*Topbar*/
 .topbar {
@@ -54,10 +70,13 @@ body {
     width: 80%;
     position: sticky;
     position: absolute;
-    background-color: #012E31;
+    background-color: #161b22;
 
 }
-.topbar h1 {
+
+.topbar .logo {
+    text-decoration: none;
+    color: white;
     width: 30%;
 }
 .navbar {
@@ -73,18 +92,30 @@ body {
 }
 .topbar .navbar a:hover {
     overflow: visible;
-    border-color: #3641B7;
+    border-color: #539df0;
 }
 /*Estilos reutilizáveis*/
+.full {
+    width: 80%;
+}
 .btn {
     color: white;
+    margin: 10px 20px;
     text-decoration: none;
-    background-color: #3641B7;
+    border: 1px solid white;
+    font-size: 120%;
+    background-color: #161b22;
     padding: 15px 10px;
     border-radius: 10px;
 }
+.btn:hover {
+    background-color: #21262d;
+}
+.small {
+    font-size: small;
+}
 .link {
-    color: #0000FF;
+    color: #539df0;
 }
 .link:hover {
     text-decoration: underline;

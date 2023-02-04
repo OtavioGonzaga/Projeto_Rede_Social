@@ -2,15 +2,14 @@
     {{else}}
     <div class="popup">
         <h3>Crie uma conta ou faça login para continuar</h3>
-        <div>
-            <a href="/user/register" class="btn">Registrar</a>
-            <a href="/user/login" class="btn">Login</a>
-        </div>
+        <form action="">
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" placeholder="Insira o seu e-mail...">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" name="password" placeholder="Insira a sua senha...">
+        </form>
+        <button class="full btn">Login</button><hr>
+        <button class="full btn">Criar Conta</button>
         <p class="small link" onclick="displaynone()">Continuar sem conta</p>
     </div>
-    <style>
-        body {
-            overflow: hidden;
-        }
-    </style>
 {{/if}}

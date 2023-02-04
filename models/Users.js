@@ -22,3 +22,4 @@ const Users = new Schema({
         default: '../uploads/default.png'
     }
 })
+mongoose.model('users', Users)
