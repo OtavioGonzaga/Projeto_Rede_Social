@@ -19,7 +19,7 @@ const Users = new Schema({
     },
     profileimg: {
         type: String,
-        default: '../uploads/default.png'
+        default: 'uploads/default.png'
     }
 })
 mongoose.model('users', Users)

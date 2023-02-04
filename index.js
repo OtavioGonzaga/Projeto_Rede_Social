@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const flash = require('connect-flash')
 const session = require('express-session')
 const app = express()
+require('dotenv').config()
 //Configurações
     //Sessão
     app.use(session({
@@ -35,5 +36,5 @@ const app = express()
     const user = require('./routes/user')
     app.use('/user', user)
 //Conexão
-const port = 2023
-app.listen(2023, () => console.log(`Servidor ativo na porta ${port}`))
+const port = process.env.PORT || 3000
+app.listen(port, () => console.log(`Servidor ativo na porta ${port}`))
