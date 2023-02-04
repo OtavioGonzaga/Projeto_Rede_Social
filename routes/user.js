@@ -27,10 +27,26 @@ const Users = mongoose.model('users')
             console.log('Novo Post registrado')
             res.redirect('../')
         }).catch((err) => {
-            console.log('Erro ao registrar o post' + err)
-        });
+            console.error('Erro ao registrar o post: \n' + err)
+        })
     })
     //Novo usuário (/register)
-    
+    router.get('/register', (req, res) => {
+        res.render('user/newuser')
+    })
+    router.post('/register', (req, res) => {
+        let newUser = {
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password
+        }
+        new Users(newUser).save().then(() => {
+            console.log('Usuário registrado com sucesso')
+            res.redirect('../')
+        }).catch((err) => {
+            console.error('Erro ao registrar usuário: \n' + err)
+            res.redirect('../')
+        })
+    })
 //Exportações
 module.exports = router
