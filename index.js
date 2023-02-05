@@ -10,7 +10,7 @@ require('dotenv').config()
 //Configurações
     //Sessão
     app.use(session({
-        secret: "@Kn5c42p6239avkssocial",
+        secret: process.env.SECRET,
         resave: true,
         saveUninitialized: true,
         cookie: {maxAge: 24 * 60 * 60 * 1000}
