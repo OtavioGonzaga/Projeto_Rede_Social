@@ -3,7 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const router = express.Router()
 const upload = require('../config/multer')
-const {hashPassword, comparePasswords} = require('../config/auth.js')
+const {hashPassword, comparePasswords} = require('../config/bcrypt.js')
 //Data
 var DataAtt = new Date()
 setInterval(() => {
