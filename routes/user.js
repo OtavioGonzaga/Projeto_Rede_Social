@@ -81,5 +81,15 @@ const Users = mongoose.model('users')
             })
         }
     })
+    //Login
+    router.get('/login', (req, res) => {
+        res.render('user/login')
+    })
+    router.post('/login', (req, res) => {
+        const newSession = {
+            email: req.body.email,
+            password: req.body.password
+        }
+    })
 //Exportações
 module.exports = router

@@ -4,8 +4,8 @@ const LocalStrategy = require('passport-local').Strategy
 require('../models/Users')
 const Users = mongoose.model('users')
 //Login e sessão
-module.exports = function (passport) {
-    function findUser(email) {
+module.exports = passport => {//Exporta toda a função de login
+    function findUser(email) { //Usa o email como indentificador único
         return Users.find(item => item.email === email)
     }
     passport.serializeUser((user, done) => {
@@ -20,7 +20,7 @@ module.exports = function (passport) {
             return done(err, null)
         }
     })
-    passport.use(new LocalStrategy({
+    passport.use(new LocalStrategy({ //Usa usuário e senha para autenticar a sessão
         usernameField: 'email',
         passwordField: 'password'
     } , (username, password, done) => {

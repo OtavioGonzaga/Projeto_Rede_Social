@@ -4,17 +4,21 @@ const handlebars = require('express-handlebars')
 const moment = require('moment')
 const mongoose = require('mongoose')
 const flash = require('connect-flash')
-const session = require('express-session')
+const passport = require('passport')
+const session = require('express-session') //Sessão express (sistema de login)
+require('./config/auth')(passport)//Faz o requerimento do sistema de autenticação e invoca a a função de login através do argumento passport
 const app = express()
 require('dotenv').config()
 //Configurações
     //Sessão
     app.use(session({
         secret: process.env.SECRET,
-        resave: true,
-        saveUninitialized: true,
+        resave: false,
+        saveUninitialized: false,
         cookie: {maxAge: 24 * 60 * 60 * 1000}
     }))
+    app.use(passport.initialize())
+    app.use(passport.session())
     //Express
     app.use(express.urlencoded({extended: true})) //É necessário para acessar itens através do método http
     app.use(express.json())
