@@ -8,9 +8,10 @@ async function hashPassword(password) {
 //funão de comparar senha e hash
 async function comparePasswords(password, hash) {
     const isMatch = await bcrypt.compare(password, hash)
-    return isMatch
+    console.log(isMatch)
+    return null, isMatch
 }
 module.exports = {
     hashPassword,
-    comparePasswords,
+    comparePasswords
 }

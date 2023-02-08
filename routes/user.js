@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const router = express.Router()
 const upload = require('../config/multer')
 const {hashPassword, comparePasswords} = require('../config/bcrypt.js')
+const passport = require('passport')
 //Data
 var DataAtt = new Date()
 setInterval(() => {
@@ -70,7 +71,7 @@ const Users = mongoose.model('users')
             let newUser = {
                 name: req.body.name,
                 email: req.body.email,
-                password: req.body.password
+                password: await hashPassword(req.body.password)
             }
             new Users(newUser).save().then(() => {
                 console.log('Usuário registrado com sucesso')
@@ -85,11 +86,11 @@ const Users = mongoose.model('users')
     router.get('/login', (req, res) => {
         res.render('user/login')
     })
-    router.post('/login', (req, res) => {
-        const newSession = {
-            email: req.body.email,
-            password: req.body.password
-        }
+    router.post('/login', (req, res, next) => {
+        passport.authenticate('local', {
+            successRedirect: '/',
+            failureRedirect: '/user/login'
+        })(req, res, next)
     })
 //Exportações
 module.exports = router
