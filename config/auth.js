@@ -24,11 +24,10 @@ module.exports = passport => { //Exporta toda a função de login
     passport.use(new LocalStrategy({ //Usa usuário e senha para autenticar a sessão
         usernameField: 'email',
         passwordField: 'password'
-    } , async (username, password, done) => {
+    }, async (username, password, done) => { 
         let user = await findUser(username)
-        console.log(user.email)
         if(!user) return done(null, false)
-        if (!comparePasswords(password, username)) return done(null, false)
+        if (!comparePasswords(password, user.password)) return done(null, false)
         return done(null, user)
     }))
 }
