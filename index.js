@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 const flash = require('connect-flash')
 const passport = require('passport')
 const session = require('express-session') //Sessão express (sistema de login)
-require('./config/auth')(passport)//Faz o requerimento do sistema de autenticação e invoca a a função de login através do argumento passport
+require('./config/auth')(passport) //Faz o requerimento do sistema de autenticação e invoca a a função de login através do argumento passport
 const app = express()
 require('dotenv').config()
 //Configurações
