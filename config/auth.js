@@ -14,7 +14,7 @@ module.exports = passport => { //Exporta toda a função de login
     })
     passport.deserializeUser(async (user, done) => {
         try {
-            const user1 = await findUser(user)
+            const user1 = await findUser(user) //Espera a função encontrar o usuário e retorna-o em uma callback 
             done(null, user1)
         } catch (error) {
             console.log(error)
