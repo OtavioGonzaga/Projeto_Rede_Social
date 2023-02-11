@@ -1,9 +1,12 @@
 <div class="topbar">
     <a class="logo" href="/"><h1>NeoChrono</h1></a>
     <nav class="navbar">
-        <a href="/user/newpost">Criar Postagem</a>
-        <a href="/user/register">Criar Conta</a>
-        <a href="/user/login">Login</a>
+        {{#if user}}
+            <a href="/user/newpost">Criar Postagem</a>
+            {{else}}
+                <a href="/user/register">Criar Conta</a>
+                <a href="/user/login">Login</a>
+        {{/if}}
     </nav>
 </div>
 <div style="height: 100px;"></div>

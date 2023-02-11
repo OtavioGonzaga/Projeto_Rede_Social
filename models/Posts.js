@@ -9,7 +9,10 @@ const Posts = new Schema({
         type: String,
         required: false
     },
-    Date: {
+    comments: {
+        type: String
+    },
+    date: {
         type: Date,
         default: new Date()
     }

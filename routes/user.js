@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const router = express.Router()
 const upload = require('../config/multer')
 const {hashPassword, comparePasswords} = require('../config/bcrypt.js')
+const {isAuthenticated} = require('../helpers/AccessControl')
 const passport = require('passport')
 //Data
 var DataAtt = new Date()
@@ -17,7 +18,7 @@ require('../models/Users')
 const Users = mongoose.model('users')
 //Rotas
     //Nova postagem (/newpost)
-    router.get('/newpost', (req, res) => {
+    router.get('/newpost', isAuthenticated, (req, res) => {
         res.render('user/newpost')
     })
     router.post('/newpost', upload.single('file'),  (req, res) => {
