@@ -21,13 +21,13 @@ module.exports = passport => { //Exporta toda a função de login
             return done(error, null)
         }
     })
-    passport.use(new LocalStrategy({ //Usa usuário e senha para autenticar a sessão
-        usernameField: 'email',
+    passport.use(new LocalStrategy({ //Recebe como primeiro argumento um objeto com identificador único e senha, no segundo argumento recebe uma função que espera a validação da senha do usuário autenticado através do bcrypt.js
+        usernameField: 'email', //Usa usuário e senha para autenticar a sessão
         passwordField: 'password'
-    }, async (username, password, done) => { 
+    }, async (username, password, done) => { //Função assíncrona que repassa o identificador único e a senha para a autenticação, ao final invoca a callback para o passport
         let user = await findUser(username)
         if(!user) return done(null, false)
-        if (!comparePasswords(password, user.password)) return done(null, false)
+        if (!await comparePasswords(password, user.password)) return done(null, false)
         return done(null, user)
     }))
 }
