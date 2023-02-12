@@ -18,6 +18,7 @@ require('../models/Users')
 const Users = mongoose.model('users')
 //Rotas
     //Nova postagem (/newpost)
+                                                //NADA DESSA ROTA FOI TESTADO
     router.get('/newpost', isAuthenticated, (req, res) => {
         res.render('user/newpost')
     })
@@ -47,41 +48,32 @@ const Users = mongoose.model('users')
                 console.error('Erro ao registrar o post: \n' + err)
             })
         }
-
     })
     //Novo usuário (/register)
     router.get('/register', (req, res) => {
         res.render('user/newuser')
     })
     router.post('/register', upload.single('profileimg'), async (req, res) => {
-        try {
-            let newUser = {
-                name: req.body.name,
-                email: req.body.email,
-                password: await hashPassword(req.body.password),
-                profileimg: req.file.path
+            try {
+                var profileImgPath = req.file.path
+            } catch (error) {
+                var profileImgPath = 'uploads/default.png'
             }
+            let newUser = {
+                name: req.body.name.trim(),
+                email: req.body.email.trim(),
+                password: await hashPassword(req.body.password.trim()),
+                profileimg: profileImgPath
+            }
+            console.log(newUser.profileimg)
             new Users(newUser).save().then(() => {
                 console.log('Usuário registrado com sucesso')
                 res.redirect('../')
             }).catch((err) => {
                 console.error('Erro ao registrar usuário: \n' + err)
+                req.flash('error', 'Houve um erro interno ao registrar a conta')
                 res.redirect('../')
             })
-        } catch (error) {
-            let newUser = {
-                name: req.body.name,
-                email: req.body.email,
-                password: await hashPassword(req.body.password)
-            }
-            new Users(newUser).save().then(() => {
-                console.log('Usuário registrado com sucesso')
-                res.redirect('../')
-            }).catch((err) => {
-                console.error('Erro ao registrar usuário: \n' + err)
-                res.redirect('../')
-            })
-        }
     })
     //Login
     router.get('/login', (req, res) => {
