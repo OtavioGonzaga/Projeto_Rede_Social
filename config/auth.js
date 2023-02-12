@@ -26,8 +26,8 @@ module.exports = passport => { //Exporta toda a função de login
         passwordField: 'password'
     }, async (username, password, done) => { //Função assíncrona que repassa o identificador único e a senha para a autenticação, ao final invoca a callback para o passport
         let user = await findUser(username)
-        if(!user) return done(null, false)
-        if (!await comparePasswords(password, user.password)) return done(null, false)
+        if(!user) return done(null, false, {message: 'Essa conta não existe'})
+        if (!await comparePasswords(password, user.password)) return done(null, false, {message: 'Senha incorreta'})
         return done(null, user)
     }))
 }

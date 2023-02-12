@@ -3,8 +3,8 @@ const express = require('express')
 const mongoose = require('mongoose')
 const router = express.Router()
 const upload = require('../config/multer')
-const {hashPassword, comparePasswords} = require('../config/bcrypt.js')
-const {isAuthenticated} = require('../helpers/AccessControl')
+const {hashPassword, comparePasswords} = require('../config/bcrypt.js') //Importa duas  funções do bcrypt
+const {isAuthenticated} = require('../helpers/AccessControl') //Importa uma verificação que só dá acesso a algumas rotas caso o usuário esteja autenticado
 const passport = require('passport')
 //Data
 var DataAtt = new Date()
@@ -90,7 +90,8 @@ const Users = mongoose.model('users')
     router.post('/login', (req, res, next) => {
         passport.authenticate('local', {
             successRedirect: '/',
-            failureRedirect: '/user/login'
+            failureRedirect: '/user/login',
+            failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js
         })(req, res, next)
     })
 //Exportações
