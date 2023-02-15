@@ -1,10 +1,10 @@
 function newAccountValidation(name, email, password, password2) { // Função de verificação de registro
     let errors = [] // Array que contém as strings que informam os erros que o usuário cometeu au tentar se autenticar
     if (!name || name === undefined || name === null) errors.push('Insira um nome')
-    if (name.length <= 2) errors.push('Nome muito pequeno')
+    if (name.length <= 3) errors.push('Nome muito pequeno')
     if (name.length > 30) errors.push('Nome muito grande')
     if (!email || email === undefined || email === null) errors.push('Insira um e-mail')
-    if (email.length < 8 || email.length > 250 || email.includes(' ') || !email.includes('@')) errors.push('Insira um e-mail válido')
+    if (email.length < 8 || email.length > 150 || email.includes(' ') || !email.includes('@')) errors.push('Insira um e-mail válido')
     if (password.length < 6) errors.push('Senha muito pequena')
     if (password.length > 25) errors.push('Senha muito longa')
     if (password.includes(' ')) errors.push('A senha não deve conter espaços')

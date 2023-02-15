@@ -4,9 +4,9 @@
         <h3>Crie uma conta ou faça login para continuar</h3>
         <form action="/user/login" method="post">
             <label for="email">E-mail:</label>
-            <input type="email" id="email" name="email" placeholder="Insira o seu e-mail...">
+            <input type="email" id="email" name="email" placeholder="Insira o seu e-mail..." minlength="8" maxlength="150" required>
             <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" placeholder="Insira a sua senha...">
+            <input type="password" id="password" name="password" placeholder="Insira a sua senha..." minlength="6" maxlength="25" required>
             <button type="submit" class="btn">Login</button>
         </form><hr>
         <a href="/user/register" class="full btn">Criar Conta</a>
