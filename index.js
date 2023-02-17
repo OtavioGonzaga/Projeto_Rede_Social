@@ -36,7 +36,11 @@ require('dotenv').config()
         //Ao se conectar deve ser usado a string 'mongodb://0.0.0.0:27017' no lugar de 'mongodb://localhost:27017' em alguns dipositivos
     mongoose.connect('mongodb://0.0.0.0:27017/redeapp').then(() => console.log('Conectado ao MongoDB')).catch((err) => console.log('Houve um erro ao se conectar ao MongoDB ' + err))
     //Handlebars
-    app.engine('handlebars', handlebars.engine({defaultLayout: 'main'}))
+    app.engine('handlebars', handlebars.engine({defaultLayout: 'main', helpers: { //Default layout define qual será o nome do arquivo central do handlebars na pasta views/layouts. Helpers define quais serão os ajudadores
+        FormatDate: date => { // Define o formato que a data será exibida nos arquivos .handlebars ao usar {{#formatDate date}}{{/formatDate}}
+            return moment(date).format('DD/MM/YYYY • HH:mm') // Invoca o moment passando a data como argumento, define o formato dessa data recebendo a string como argumento e retorna a data já formatada para o objeto formatDate
+        }
+    }}))
     app.set('view engine', 'handlebars')
     //Public
     app.use(express.static('./public'))
