@@ -67,7 +67,7 @@ const Users = mongoose.model('users')
                 password2: req.body.password2.trim(),
                 profileimg: profileImgPath
             }
-            let verification = newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) // Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
+            let verification = await newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) // Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
             if (verification.length === 0) { // Caso a verificação não retorne nenhum erro o processo de registro será continuado
                 delete newUser.password2 // Deleta a verificação de senha, pois ela não será selva no banco de dados
                 newUser.password = await hashPassword(newUser.password) // Espera o bcrypt gerar o hash da senha (pasta config)
