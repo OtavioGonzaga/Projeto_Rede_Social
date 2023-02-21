@@ -1,13 +1,8 @@
-const mongoose = require('mongoose')
+const {findUser} = require('../helpers/findSchema')
 const LocalStrategy = require('passport-local').Strategy
-require('../models/Users')
-const Users = mongoose.model('users')
 const {hashPasswords, comparePasswords} = require('../config/bcrypt')
 //Login e sessão
 module.exports = passport => { //Exporta toda a função de login
-    async function findUser(email) { //Usa o email como indentificador único
-        return await Users.findOne({email: email})
-    }
     passport.serializeUser((user, done) => {
         done(null, user.email)
     })

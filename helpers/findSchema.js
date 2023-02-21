@@ -4,5 +4,10 @@ const Users = mongoose.model('users')
 require('../models/Posts')
 const Posts = mongoose.model('posts')
 async function findUser(email) {
-    return await Users.findOne({email: email})
+    return await Users.findOne({email: email}) //Procura um único usuário
+}
+//Crie novas funções conforme a necessidade
+module.exports = {
+    findUser,
+    //exporte as novas funções
 }

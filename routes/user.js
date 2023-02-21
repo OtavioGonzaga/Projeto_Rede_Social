@@ -58,7 +58,7 @@ const Users = mongoose.model('users')
             try { //Tenta acessar o caminho da imagem upada pelo usuário na pasta uploads, caso não consiga, definirá que o caminho é 'uploads/default'.
                 var profileImgPath = req.file.path
             } catch (error) {
-                var profileImgPath = '/uploads/profileImages/default.png'
+                var profileImgPath = 'uploads/default'
             }
             let newUser = { //Acessa os inputs do html e salva os values em um objeto
                 name: req.body.name.trim(),
