@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
-const Posts = new Schema({
+const Schema = mongoose.Schema // Acessa o Schema de formatação para um coleção do MongoDB
+const Posts = new Schema({ // Cria um novo Schema para armazenar postagens no MongoDB
     description: {
         type: String,
         required: false
@@ -10,11 +10,12 @@ const Posts = new Schema({
         required: false
     },
     comments: {
-        type: String
+        type: Array,
+        required: false
     },
     date: {
         type: Date,
         default: new Date()
     }
 })
-mongoose.model('posts', Posts)
+mongoose.model('posts', Posts) //O primeiro argumento dá um nome para o modelo, o segundo passa o Schema do modelo

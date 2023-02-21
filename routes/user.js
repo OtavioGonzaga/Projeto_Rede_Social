@@ -54,7 +54,7 @@ const Users = mongoose.model('users')
     router.get('/register', (req, res) => {
         res.render('user/newuser')
     })
-    router.post('/register', upload.single('profileimg'), async (req, res, next) => {
+    router.post('/register', upload.single('profileimg') /*Acessa o campo de uploads do html passado na string*/, async (req, res, next) => {
             try { //Tenta acessar o caminho da imagem upada pelo usuário na pasta uploads, caso não consiga, definirá que o caminho é 'uploads/default'.
                 var profileImgPath = req.file.path
             } catch (error) {
@@ -75,7 +75,6 @@ const Users = mongoose.model('users')
                     passport.authenticate('local', { // Ver comentários da rota /login
                         failureFlash: true,
                         failureRedirect: '/login',
-                        successFlash: 'Seja bem-vindo', //NÃO ESTÁ FUNCIONANDO, DEVE SER ESTUDADO
                         successRedirect: '/'
                     })(req, res, next)
                 }).catch((err) => { // Previne que a aplicação quebre ao registrar um erro.
@@ -84,7 +83,7 @@ const Users = mongoose.model('users')
                     res.redirect('../')
                 })
             } else { // Caso a verificação retorne algum erro irá alertar o usuário usando o flash
-                verification.map((e) => {
+                verification.map((e) => { // Adiciona um espaço para após a vírgula para separar os itens do array
                     e = ' ' + e
                     req.flash('error', e)
                 })
@@ -98,7 +97,6 @@ const Users = mongoose.model('users')
     router.post('/login', (req, res, next) => {
         passport.authenticate('local', { // Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
             successRedirect: '/', // Em caso de sucesso redireciona o usuário para a home do site.
-            successFlash: 'Bem-vindo de volta', // Recebe uma string e exibe-a em caso de sucesso  //NÃO ESTÁ FUNCIONANDO, DEVE SER ESTUDADO
             failureRedirect: '/user/login', //Em caso de falha redireciona para a página de login e exibe o erro.
             failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
         })(req, res, next)
