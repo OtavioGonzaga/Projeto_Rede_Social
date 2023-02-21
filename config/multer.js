@@ -8,14 +8,13 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname))
     }
 })
-const fileFilter = function (req, file, cb) {
+const fileFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
+        cb(null, true);
     } else {
-        console.log('Tem que ser imagem')
-      cb(new Error('Apenas imagens são permitidas!'), false);
+        return 'Selecione uma imagem como foto de perfil'
     }
-  };
+  }
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter

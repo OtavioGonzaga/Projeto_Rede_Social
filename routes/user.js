@@ -60,30 +60,30 @@ const Users = mongoose.model('users')
             } catch (error) {
                 var profileImgPath = '/uploads/profileImages/default.png'
             }
-            let newUser = { // Acessa os inputs do html e salva os values em um objeto
+            let newUser = { //Acessa os inputs do html e salva os values em um objeto
                 name: req.body.name.trim(),
                 email: req.body.email.trim(),
                 password: req.body.password.trim(),
                 password2: req.body.password2.trim(),
                 profileimg: profileImgPath
             }
-            let verification = await newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) // Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
-            if (verification.length === 0) { // Caso a verificação não retorne nenhum erro o processo de registro será continuado
-                delete newUser.password2 // Deleta a verificação de senha, pois ela não será selva no banco de dados
-                newUser.password = await hashPassword(newUser.password) // Espera o bcrypt gerar o hash da senha (pasta config)
-                new Users(newUser).save().then(() => { // Após toda a verificação, as informações do usuário são salvas no banco de dados.
-                    passport.authenticate('local', { // Ver comentários da rota /login
+            let verification = await newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) //Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
+            if (verification.length === 0) { //Caso a verificação não retorne nenhum erro o processo de registro será continuado
+                delete newUser.password2 //Deleta a verificação de senha, pois ela não será selva no banco de dados
+                newUser.password = await hashPassword(newUser.password) //Espera o bcrypt gerar o hash da senha (pasta config)
+                new Users(newUser).save().then(() => { //Após toda a verificação, as informações do usuário são salvas no banco de dados.
+                    passport.authenticate('local', { //Ver comentários da rota /login
                         failureFlash: true,
                         failureRedirect: '/login',
                         successRedirect: '/'
                     })(req, res, next)
-                }).catch((err) => { // Previne que a aplicação quebre ao registrar um erro.
+                }).catch((err) => { //Previne que a aplicação quebre ao registrar um erro.
                     console.error('Erro ao registrar usuário: \n' + err)
                     req.flash('error', 'Houve um erro interno ao registrar a conta')
                     res.redirect('../')
                 })
-            } else { // Caso a verificação retorne algum erro irá alertar o usuário usando o flash
-                verification.map((e) => { // Adiciona um espaço para após a vírgula para separar os itens do array
+            } else { //Caso a verificação retorne algum erro irá alertar o usuário usando o flash
+                verification.map((e) => { //Adiciona um espaço para após a vírgula para separar os itens do array
                     e = ' ' + e
                     req.flash('error', e)
                 })
@@ -95,8 +95,8 @@ const Users = mongoose.model('users')
         res.render('user/login')
     })
     router.post('/login', (req, res, next) => {
-        passport.authenticate('local', { // Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
-            successRedirect: '/', // Em caso de sucesso redireciona o usuário para a home do site.
+        passport.authenticate('local', { //Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
+            successRedirect: '/', //Em caso de sucesso redireciona o usuário para a home do site.
             failureRedirect: '/user/login', //Em caso de falha redireciona para a página de login e exibe o erro.
             failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
         })(req, res, next)

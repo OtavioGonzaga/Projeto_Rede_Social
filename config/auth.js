@@ -6,16 +6,14 @@ const {hashPasswords, comparePasswords} = require('../config/bcrypt')
 //Login e sessão
 module.exports = passport => { //Exporta toda a função de login
     async function findUser(email) { //Usa o email como indentificador único
-        const user = await Users.findOne({email: email})
-        return user
+        return await Users.findOne({email: email})
     }
     passport.serializeUser((user, done) => {
         done(null, user.email)
     })
     passport.deserializeUser(async (user, done) => {
         try {
-            const user1 = await findUser(user) //Espera a função encontrar o usuário e retorna-o em uma callback 
-            done(null, user1)
+            done(null, await findUser(user)) //Espera a função encontrar o usuário e retorna-o em uma callback 
         } catch (error) {
             console.log(error)
             return done(error, null)
