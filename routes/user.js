@@ -5,7 +5,8 @@ const router = express.Router()
 const upload = require('../config/multer')
 const {hashPassword, comparePasswords} = require('../config/bcrypt.js') //Importa duas  funções do bcrypt
 const {isAuthenticated} = require('../helpers/AccessControl') //Importa uma verificação que só dá acesso a algumas rotas caso o usuário esteja autenticado
-const {newAccountValidation} = require('../helpers/FormsValidation') //COMENTA ISSO AQUI TAMBÉM
+const {newAccountValidation} = require('../helpers/FormsValidation') //Importa uma verificação de formulário para os campos da rota de registro
+const {findUser} = require('../helpers/findSchema')
 const passport = require('passport')
 //Data
 var DataAtt = new Date()
@@ -18,37 +19,10 @@ const Posts = mongoose.model('posts')
 require('../models/Users')
 const Users = mongoose.model('users')
 //Rotas
-    //Nova postagem (/newpost)
-                                                //NADA DESSA ROTA FOI TESTADO
-    router.get('/newpost', isAuthenticated, (req, res) => {
-        res.render('user/newpost')
-    })
-    router.post('/newpost', upload.single('file'),  (req, res) => {
-        try {
-            const newPost = {
-                description: req.body.description,
-                img: req.file.path,
-                Date: new Date()
-            }
-            new Posts(newPost).save().then(() => {
-                console.log('Novo Post registrado')
-                res.redirect('../')
-            }).catch((err) => {
-                console.error('Erro ao registrar o post: \n' + err)
-            })
-        } catch (error) {
-            console.error(error)
-            const newPost = {
-                description: req.body.description,
-                Date: new Date()
-            }
-            new Posts(newPost).save().then(() => {
-                console.log('Novo Post registrado')
-                res.redirect('../')
-            }).catch((err) => {
-                console.error('Erro ao registrar o post: \n' + err)
-            })
-        }
+    //Conta (/)
+    router.get('/', async (req, res) => {
+        const userInfo = await findUser(req.session.passport.user)
+        res.render('user/user', {userInfo})
     })
     //Novo usuário (/register)
     router.get('/register', (req, res) => {
