@@ -20,9 +20,8 @@ require('../models/Users')
 const Users = mongoose.model('users')
 //Rotas
     //Conta (/)
-    router.get('/', async (req, res) => {
-        const userInfo = await findUser(req.session.passport.user)
-        res.render('user/user', {userInfo})
+    router.get('/', isAuthenticated, (req, res) => {
+        res.render('user/user')
     })
     //Novo usuário (/register)
     router.get('/register', (req, res) => {
