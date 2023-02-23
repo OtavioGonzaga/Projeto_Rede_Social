@@ -20,7 +20,7 @@ require('../models/Users')
 const Users = mongoose.model('users')
 //Rotas
     //Conta (/)
-    router.get('/', isAuthenticated, (req, res) => {
+    router.get('/', isAuthenticated, async (req, res) => {
         res.render('user/user')
     })
     //Novo usuário (/register)
@@ -31,14 +31,14 @@ const Users = mongoose.model('users')
             try { //Tenta acessar o caminho da imagem upada pelo usuário na pasta uploads, caso não consiga, definirá que o caminho é 'uploads/default'.
                 var profileImgPath = req.file.path
             } catch (error) {
-                var profileImgPath = 'uploads/default'
+                var profileImgPath = 'uploads/default.png'
             }
             let newUser = { //Acessa os inputs do html e salva os values em um objeto
                 name: req.body.name.trim(),
                 email: req.body.email.trim(),
-                password: req.body.password.trim(),
-                password2: req.body.password2.trim(),
-                profileimg: profileImgPath
+                password: req.body.password,
+                password2: req.body.password2,
+                profileImg: profileImgPath
             }
             let verification = await newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) //Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
             if (verification.length === 0) { //Caso a verificação não retorne nenhum erro o processo de registro será continuado

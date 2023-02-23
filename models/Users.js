@@ -17,7 +17,7 @@ const Users = new Schema({
         type: String,
         required: true
     },
-    profileimg: {
+    profileImg: {
         type: String,
         default: 'uploads/default.png'
     }
