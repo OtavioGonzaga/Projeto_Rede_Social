@@ -44,6 +44,7 @@ require('dotenv').config()
     app.set('view engine', 'handlebars')
     //Public
     app.use(express.static('./public'))
+    app.use(express.static('./uploads'))
 //Rotas
     //Home
     app.get('/', (req, res) => {

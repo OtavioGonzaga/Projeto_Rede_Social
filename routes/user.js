@@ -6,7 +6,8 @@ const upload = require('../config/multer')
 const {hashPassword, comparePasswords} = require('../config/bcrypt.js') //Importa duas  funções do bcrypt
 const {isAuthenticated} = require('../helpers/AccessControl') //Importa uma verificação que só dá acesso a algumas rotas caso o usuário esteja autenticado
 const {newAccountValidation} = require('../helpers/FormsValidation') //Importa uma verificação de formulário para os campos da rota de registro
-const {findUser} = require('../helpers/findSchema')
+const {findUser} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
+const imgHash = require('../config/imageToBase64')
 const passport = require('passport')
 //Data
 var DataAtt = new Date()
@@ -21,7 +22,9 @@ const Users = mongoose.model('users')
 //Rotas
     //Conta (/)
     router.get('/', isAuthenticated, async (req, res) => {
-        res.render('user/user')
+        const user = await findUser(req.session.passport.user, true)
+        user.profileImg = await imgHash(user.profileImg)
+        res.render('user/user', {user})
     })
     //Novo usuário (/register)
     router.get('/register', (req, res) => {
