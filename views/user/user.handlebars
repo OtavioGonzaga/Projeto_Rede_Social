@@ -1,2 +1,7 @@
-<img src="data:image/png;base64,{{user.profileImg}}" alt="">
-<p>{{user.name}}</p>
+<img class="g-profileimg" src="data:image/png;base64,{{user.profileImg}}" alt="">
+<h2>{{user.name}} {{#if user.isAdm}}
+    (Administrador)
+{{/if}}</h2>
+<h5>E-mail: {{user.email}}</h5>
+<a href="./user/edit"><i class="bi bi-pencil-square"></i>Editar Perfil</a>
+<a href="./user/logout">Logout</a>

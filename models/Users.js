@@ -6,8 +6,8 @@ const Users = new Schema({
         required: true
     },
     isAdm: {
-        type: Number,
-        default: 0
+        type: Boolean,
+        default: false
     },
     email: {
         type: String,

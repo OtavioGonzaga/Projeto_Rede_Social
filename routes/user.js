@@ -66,7 +66,7 @@ const Users = mongoose.model('users')
                 res.redirect('./register')                
             }
     })
-    //Login
+    //Login (/login)
     router.get('/login', (req, res) => {
         res.render('user/login')
     })
@@ -76,6 +76,19 @@ const Users = mongoose.model('users')
             failureRedirect: '/user/login', //Em caso de falha redireciona para a página de login e exibe o erro.
             failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
         })(req, res, next)
+    })
+    //Logout
+    router.get('/logout', (req, res) => {
+        req.logout(err => {
+            if (err) {
+                console.error(err)
+                req.flash('error', 'Não foi possível fazer o logout')
+                res.redirect('/')    
+            } else {
+                req.flash('success', 'Logout realizado com êxito')
+                res.redirect('/')
+            }
+        })
     })
 //Exportações
 module.exports = router
