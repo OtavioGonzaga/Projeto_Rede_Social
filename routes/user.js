@@ -7,7 +7,8 @@ const {hashPassword, comparePasswords} = require('../config/bcrypt.js') //Import
 const {isAuthenticated} = require('../helpers/AccessControl') //Importa uma verificação que só dá acesso a algumas rotas caso o usuário esteja autenticado
 const {newAccountValidation} = require('../helpers/FormsValidation') //Importa uma verificação de formulário para os campos da rota de registro
 const {findUser} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
-const imgHash = require('../config/imageToBase64')
+const imgHash = require('../config/imageToBase64') //Importa uma função do arquivo especificado que trasforma uma imagem em string
+const emailnode = require('../config/nodemailer')
 const passport = require('passport')
 //Data
 var DataAtt = new Date()
@@ -76,6 +77,14 @@ const Users = mongoose.model('users')
             failureRedirect: '/user/login', //Em caso de falha redireciona para a página de login e exibe o erro.
             failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
         })(req, res, next)
+    })
+    //Edit (/edit)
+    router.get('/edit', isAuthenticated, async (req, res) => {
+        if (await emailnode('otaviolgonzaga2006@gmail.com', 'Código de verificação', '<h1 style="backgroud-color: black; color= white">1234</h1>') == true) {
+            res.send('Deu certo')
+        } else {
+            res.send('Fracassado')
+        }
     })
     //Logout
     router.get('/logout', (req, res) => {
