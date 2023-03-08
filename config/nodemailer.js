@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
         pass: userpass
     }
 })
-async function emailnode(addressee, subject, html) {
+async function emailNode(addressee, subject, html) {
     try {
         await transporter.sendMail({
             from: useremail,
@@ -26,4 +26,4 @@ async function emailnode(addressee, subject, html) {
         return false
     }
 }
-module.exports = emailnode
+module.exports = emailNode

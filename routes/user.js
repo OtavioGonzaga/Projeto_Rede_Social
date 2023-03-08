@@ -8,7 +8,7 @@ const {isAuthenticated} = require('../helpers/AccessControl') //Importa uma veri
 const {newAccountValidation} = require('../helpers/FormsValidation') //Importa uma verificação de formulário para os campos da rota de registro
 const {findUser} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
 const imgHash = require('../config/imageToBase64') //Importa uma função do arquivo especificado que trasforma uma imagem em string
-const emailnode = require('../config/nodemailer')
+const emailNode = require('../config/nodemailer')
 const passport = require('passport')
 //Data
 var DataAtt = new Date()
@@ -45,27 +45,47 @@ const Users = mongoose.model('users')
                 profileImg: profileImgPath
             }
             let verification = await newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) //Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
-            if (verification.length === 0) { //Caso a verificação não retorne nenhum erro o processo de registro será continuado
-                delete newUser.password2 //Deleta a verificação de senha, pois ela não será selva no banco de dados
-                newUser.password = await hashPassword(newUser.password) //Espera o bcrypt gerar o hash da senha (pasta config)
-                new Users(newUser).save().then(() => { //Após toda a verificação, as informações do usuário são salvas no banco de dados.
-                    passport.authenticate('local', { //Ver comentários da rota /login
-                        failureFlash: true,
-                        failureRedirect: '/login',
-                        successRedirect: '/'
-                    })(req, res, next)
-                }).catch((err) => { //Previne que a aplicação quebre ao registrar um erro.
-                    console.error('Erro ao registrar usuário: \n' + err)
-                    req.flash('error', 'Houve um erro interno ao registrar a conta')
-                    res.redirect('../')
-                })
-            } else { //Caso a verificação retorne algum erro irá alertar o usuário usando o flash
+            if (verification.length === 0) {
+                res.redirect(`./register/entercode?name=${newUser.name}&email=${newUser.email}&pw=${await hashPassword(newUser.password)}`)
+            } else {
                 verification.map((e) => { //Adiciona um espaço para após a vírgula para separar os itens do array
                     e = ' ' + e
                     req.flash('error', e)
                 })
-                res.redirect('./register')                
+                res.redirect('./register')  
             }
+            // if (verification.length === 0) { //Caso a verificação não retorne nenhum erro o processo de registro será continuado
+            //     delete newUser.password2 //Deleta a verificação de senha, pois ela não será selva no banco de dados
+            //     newUser.password = await hashPassword(newUser.password) //Espera o bcrypt gerar o hash da senha (pasta config)
+            //     new Users(newUser).save().then(() => { //Após toda a verificação, as informações do usuário são salvas no banco de dados.
+            //         passport.authenticate('local', { //Ver comentários da rota /login
+            //             failureFlash: true,
+            //             failureRedirect: '/login',
+            //             successRedirect: '/'
+            //         })(req, res, next)
+            //     }).catch((err) => { //Previne que a aplicação quebre ao registrar um erro.
+            //         console.error('Erro ao registrar usuário: \n' + err)
+            //         req.flash('error', 'Houve um erro interno ao registrar a conta')
+            //         res.redirect('../')
+            //     })
+            // } else { //Caso a verificação retorne algum erro irá alertar o usuário usando o flash
+            //     verification.map((e) => { //Adiciona um espaço para após a vírgula para separar os itens do array
+            //         e = ' ' + e
+            //         req.flash('error', e)
+            //     })
+            //     res.redirect('./register')                
+            // }
+    })
+    //Verificação de nova conta por email (/register/entercode)
+    router.get('/register/entercode', (req, res) => {
+        let newUser = {
+            name: req.query.name,
+            email: req.query.email,
+            password: req.query.pw
+        }
+        let emailCode = Math.floor(Math.random() * 9000) + 1000
+        emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
+        res.render('user/registeremail')
     })
     //Login (/login)
     router.get('/login', (req, res) => {
@@ -80,11 +100,9 @@ const Users = mongoose.model('users')
     })
     //Edit (/edit)
     router.get('/edit', isAuthenticated, async (req, res) => {
-        if (await emailnode('otaviolgonzaga2006@gmail.com', 'Código de verificação', '<h1 style="backgroud-color: black; color= white">1234</h1>') == true) {
-            res.send('Deu certo')
-        } else {
-            res.send('Fracassado')
-        }
+
+                                                                                    // Terminar depois
+
     })
     //Logout
     router.get('/logout', (req, res) => {
