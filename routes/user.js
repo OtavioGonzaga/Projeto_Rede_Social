@@ -47,18 +47,30 @@ const Codes = mongoose.model('codes')
             }
             let verification = await newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) //Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
             if (verification.length === 0) {
+                delete newUser.password2
                 let id = await findCode(newUser.email)
                 console.log(id)
                 if (id) {
-                    res.redirect(`./register/entercode?id=${id._id}`)
+                    if (comparePasswords(newUser.password, id.password) && newUser.name === id.name) {
+                        res.redirect(`./register/entercode?id=${id._id}`)
+                    } else {
+                        Codes.findOne({email: id.email}, async (err, user) => {
+                            if (err) throw err
+                            user.password = await hashPassword(newUser.password)
+                            user.name = newUser.name
+                            user.save(err => {
+                                if (err) throw err
+                            })
+                          })
+                    }
                 } else {
-                    delete newUser.password2
                     newUser.password = await hashPassword(newUser.password)
                     let emailCode = Math.floor(Math.random() * 9000) + 1000
                     emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
                     newUser.code = emailCode
                     new Codes(newUser).save().then((code) => {
                         console.log(code)
+                        res.redirect(`./register/entercode?id=${code._id}`)
                     }).catch((err) => {
                         console.log('esse erro mesmo')
                         console.log(err)
@@ -100,7 +112,10 @@ const Codes = mongoose.model('codes')
         res.render('user/registeremail')
     })
     router.post('/register/entercode', async (req, res) => {
-        let newUser = await findCodeById(req.query.id)
+        let newUser = {
+            id: req.body.id
+        }
+        console.log(newUser)
     })
     //Login (/login)
     router.get('/login', (req, res) => {
