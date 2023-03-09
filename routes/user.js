@@ -6,7 +6,7 @@ const upload = require('../config/multer')
 const {hashPassword, comparePasswords} = require('../config/bcrypt.js') //Importa duas  funções do bcrypt
 const {isAuthenticated} = require('../helpers/AccessControl') //Importa uma verificação que só dá acesso a algumas rotas caso o usuário esteja autenticado
 const {newAccountValidation} = require('../helpers/FormsValidation') //Importa uma verificação de formulário para os campos da rota de registro
-const {findUser} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
+const {findUser, findCode, findCodeById} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
 const imgHash = require('../config/imageToBase64') //Importa uma função do arquivo especificado que trasforma uma imagem em string
 const emailNode = require('../config/nodemailer')
 const passport = require('passport')
@@ -20,6 +20,8 @@ require('../models/Posts')
 const Posts = mongoose.model('posts')
 require('../models/Users')
 const Users = mongoose.model('users')
+require('../models/Codes')
+const Codes = mongoose.model('codes')
 //Rotas
     //Conta (/)
     router.get('/', isAuthenticated, async (req, res) => {
@@ -41,12 +43,29 @@ const Users = mongoose.model('users')
                 name: req.body.name.trim(),
                 email: req.body.email.trim(),
                 password: req.body.password,
-                password2: req.body.password2,
-                profileImg: profileImgPath
+                password2: req.body.password2
             }
             let verification = await newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) //Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
             if (verification.length === 0) {
-                res.redirect(`./register/entercode?name=${newUser.name}&email=${newUser.email}&pw=${await hashPassword(newUser.password)}`)
+                let id = await findCode(newUser.email)
+                console.log(id)
+                if (id) {
+                    res.redirect(`./register/entercode?id=${id._id}`)
+                } else {
+                    delete newUser.password2
+                    newUser.password = await hashPassword(newUser.password)
+                    let emailCode = Math.floor(Math.random() * 9000) + 1000
+                    emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
+                    newUser.code = emailCode
+                    new Codes(newUser).save().then((code) => {
+                        console.log(code)
+                    }).catch((err) => {
+                        console.log('esse erro mesmo')
+                        console.log(err)
+                        req.flash('error', 'Houve um erro ao fazer o cadastro')
+                        res.redirect('../')
+                    })
+                }
             } else {
                 verification.map((e) => { //Adiciona um espaço para após a vírgula para separar os itens do array
                     e = ' ' + e
@@ -78,14 +97,10 @@ const Users = mongoose.model('users')
     })
     //Verificação de nova conta por email (/register/entercode)
     router.get('/register/entercode', (req, res) => {
-        let newUser = {
-            name: req.query.name,
-            email: req.query.email,
-            password: req.query.pw
-        }
-        let emailCode = Math.floor(Math.random() * 9000) + 1000
-        emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
         res.render('user/registeremail')
+    })
+    router.post('/register/entercode', async (req, res) => {
+        let newUser = await findCodeById(req.query.id)
     })
     //Login (/login)
     router.get('/login', (req, res) => {
