@@ -49,7 +49,6 @@ const Codes = mongoose.model('codes')
             if (verification.length === 0) {
                 delete newUser.password2
                 let id = await findCode(newUser.email)
-                console.log(id)
                 if (id) {
                     if (comparePasswords(newUser.password, id.password) && newUser.name === id.name) {
                         res.redirect(`./register/entercode?id=${id._id}`)
@@ -69,10 +68,8 @@ const Codes = mongoose.model('codes')
                     emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
                     newUser.code = emailCode
                     new Codes(newUser).save().then((code) => {
-                        console.log(code)
                         res.redirect(`./register/entercode?id=${code._id}`)
                     }).catch((err) => {
-                        console.log('esse erro mesmo')
                         console.log(err)
                         req.flash('error', 'Houve um erro ao fazer o cadastro')
                         res.redirect('../')
@@ -109,13 +106,32 @@ const Codes = mongoose.model('codes')
     })
     //Verificação de nova conta por email (/register/entercode)
     router.get('/register/entercode', (req, res) => {
-        res.render('user/registeremail')
+        let id = req.query.id
+        if (!id) res.redirect('../../')
+        res.render('user/registeremail', {id})
     })
     router.post('/register/entercode', async (req, res) => {
-        let newUser = {
-            id: req.body.id
+        let newUser = await findCodeById(req.body.id)
+        if (!newUser) {
+            req.flash('error', 'Tempo limite de servidor')
+            res.redirect('../')
+        } else {
+            if (req.body.code != newUser.code) {
+                req.flash('error', 'Código incorreto')
+                res.redirect(`./entercode?id=${req.body.id}`)
+            } else {
+                delete newUser.code
+                delete newUser._id
+                new Users(newUser).save().then(() => {
+                    req.flash('success', 'Conta criada com sucesso')
+                    res.redirect('../uploadprofileimg')
+                }).catch((err) => {
+                    console.log('Erro ao salvar a conta: \n' + err)
+                    req.flash('error', 'Tempo limite de servidor')
+                    res.redirect('../../')
+                })
+            }
         }
-        console.log(newUser)
     })
     //Login (/login)
     router.get('/login', (req, res) => {

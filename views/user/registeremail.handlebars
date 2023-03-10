@@ -1,11 +1,5 @@
-<form action="" method="post">
+<form action="./entercode" method="post">
     <input type="number" name="code" id="code">
-    <input type="hidden" name="id" id="id">
-    <script>
-        const urlParams = new URLSearchParams(window.location.search)
-        const id = urlParams.get('id')
-        const idInput = document.getElementById('id')
-        idInput.value = id
-    </script>
+    <input type="hidden" name="id" id="id" value="{{id}}">
     <button type="submit">Verificar</button>
 </form>
