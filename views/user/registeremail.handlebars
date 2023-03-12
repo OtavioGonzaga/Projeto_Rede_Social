@@ -1,5 +1,7 @@
-<form action="./entercode" method="post">
+<form method="post">
     <input type="number" name="code" id="code">
-    <input type="hidden" name="id" id="id" value="{{id}}">
+    <input type="hidden" name="id" value="{{id._id}}">
+    <input type="hidden" name="email" value="{{id.email}}">
+    <input type="hidden" name="password" value="{{id.password}}">
     <button type="submit">Verificar</button>
 </form>
