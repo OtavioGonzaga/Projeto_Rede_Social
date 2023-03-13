@@ -1,12 +1,19 @@
 //Módulos
 const express = require('express')
-const mongoose = require('mongoose')
 const router = express.Router()
+const mongoose = require('mongoose')
+const passport = require('passport')
 //Config
-
+const emailNode = require('../config/nodemailer')
+const {hashPassword, comparePasswords} = require('../config/bcrypt')
 //Helpers
-const {findUser} = require('../helpers/findSchema')
-const {newUserValidation} = require('../helpers/FormsValidation')
+const {newAccountValidation} = require('../helpers/formsValidation')
+const {findUser, findCode, findCodeById} = require('../helpers/findSchema')
+//Banco de dados
+require('../models/Codes')
+const Codes = mongoose.model('codes')
+require('../models/Users')
+const Users = mongoose.model('users')
 //Novo usuário (/)
 router.get('/', (req, res) => {
     res.render('register/newuser')
@@ -23,8 +30,7 @@ router.post('/', async (req, res) => {
         let id = await findCode(newUser.email)
         if (id) {
             if (comparePasswords(newUser.password, id.password) && newUser.name === id.name) {
-                console.log('linha 49')
-                res.redirect(`./entercode?id=${id._id}`)
+                res.redirect(`/register/entercode?id=${id._id}`)
             } else {
                 Codes.findOne({email: id.email}, async (err, user) => {
                     if (err) throw err
@@ -41,7 +47,7 @@ router.post('/', async (req, res) => {
             emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
             newUser.code = emailCode
             new Codes(newUser).save().then((code) => {
-                res.redirect(`./entercode?id=${code._id}`)
+                res.redirect(`/register/entercode?id=${code._id}`)
             }).catch((err) => {
                 console.log(err)
                 req.flash('error', 'Houve um erro ao fazer o cadastro')
@@ -57,12 +63,12 @@ router.post('/', async (req, res) => {
     }
 })
 //Verificação de nova conta por email (/register/entercode)
-router.get('/register/entercode', async (req, res) => {
+router.get('/entercode', async (req, res) => {
     let id = await findCodeById(req.query.id, true)
     if (!id) res.redirect('/')
-    res.render('user/registeremail', {id})
+    res.render('register/registeremail', {id})
 })
-router.post('/register/entercode', async (req, res, next) => {
+router.post('/entercode', async (req, res, next) => {
     let newUser = await findCodeById(req.body.id)
     if (!newUser) {
         req.flash('error', 'Tempo limite de servidor')
@@ -70,7 +76,7 @@ router.post('/register/entercode', async (req, res, next) => {
     } else {
         if (req.body.code != newUser.code) {
             req.flash('error', 'Código incorreto')
-            res.redirect(`./entercode?id=${req.body.id}`)
+            res.redirect(`/register/entercode?id=${req.body.id}`)
         } else {
             newUser = {
                 name: newUser.name,
@@ -84,14 +90,14 @@ router.post('/register/entercode', async (req, res, next) => {
                 new Users(newUser).save().then(() => {
                     try {
                         passport.authenticate('local', { //Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
-                            successRedirect: './uploadprofileimg', //Em caso de sucesso redireciona o usuário para a home do site.
-                            failureRedirect: './', //Em caso de falha redireciona para a página de login e exibe o erro.
+                            successRedirect: '/user/uploadprofileimg', //Em caso de sucesso redireciona o usuário para a home do site.
+                            failureRedirect: '/login', //Em caso de falha redireciona para a página de login e exibe o erro.
                             failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
                         })(req, res, next)
                     } catch (error) {
                         console.log(error)
                         req.flash('error', 'Não foi possível fazer login')
-                        res.redirect('./uploadprofileimg')
+                        res.redirect('/user/uploadprofileimg')
                     }
                 }).catch((err) => {
                     console.log('Erro ao salvar a conta: \n' + err)

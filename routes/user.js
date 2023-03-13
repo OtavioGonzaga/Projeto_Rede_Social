@@ -1,8 +1,6 @@
 //Carregando módulos
 const express = require('express')
-const mongoose = require('mongoose')
 const router = express.Router()
-const passport = require('passport')
 //Config
 const imgHash = require('../config/imageToBase64') //Importa uma função do arquivo especificado que trasforma uma imagem em string
 //Helpers
@@ -12,13 +10,6 @@ var DataAtt = new Date()
 setInterval(() => {
 DataAtt = new Date()
 }, 1000)
-//Acessando bancos de dados
-require('../models/Posts')
-const Posts = mongoose.model('posts')
-require('../models/Users')
-const Users = mongoose.model('users')
-require('../models/Codes')
-const Codes = mongoose.model('codes')
 //Conta (/)
 router.get('/', async (req, res) => {
     const user = await findUser(req.session.passport.user, true)

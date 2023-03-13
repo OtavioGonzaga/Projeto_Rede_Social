@@ -10,7 +10,7 @@ require('./config/auth')(passport) //Faz o requerimento do sistema de autentica√
 const app = express()
 require('dotenv').config()
 //Helpers
-const {isAuthenticated} = require('./helpers/AccessControl')
+const {isAuthenticated} = require('./helpers/accessControl')
 //Sess√£o
 app.use(session({
     secret: process.env.SECRET,
