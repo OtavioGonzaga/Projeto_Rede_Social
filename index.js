@@ -57,7 +57,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res, next) => {
     passport.authenticate('local', { //Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
         successRedirect: '/', //Em caso de sucesso redireciona o usuário para a home do site.
-        failureRedirect: '/user/login', //Em caso de falha redireciona para a página de login e exibe o erro.
+        failureRedirect: '/login', //Em caso de falha redireciona para a página de login e exibe o erro.
         failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
     })(req, res, next)
 })

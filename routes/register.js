@@ -1,6 +1,6 @@
 //Módulos
 const express = require('express')
-const router = express.Router()
+const router = express.Router() // Função router do express que interliga as rotas divididas em arquivos separados
 const mongoose = require('mongoose')
 const passport = require('passport')
 //Config
@@ -20,18 +20,18 @@ router.get('/', (req, res) => {
 })
 router.post('/', async (req, res) => {
     let newUser = { //Acessa os inputs do html e salva os values em um objeto
-        name: req.body.name.trim(),
+        name: req.body.name.trim(), // trim() tira os espaços no começo e no final da string
         email: req.body.email.trim(),
         password: req.body.password,
-        password2: req.body.password2
+        password2: req.body.password2 // Para verificar se o usuário digitou a senha corretamente
     }
     let verification = await newAccountValidation(newUser.name, newUser.email, newUser.password, newUser.password2) //Função do arquivo FormsValidation.js da pasta helpers que faz a verificação dos values passados pelo usuário
-    if (verification.length === 0) {
-        let id = await findCode(newUser.email)
-        if (id) {
-            if (comparePasswords(newUser.password, id.password) && newUser.name === id.name) {
-                res.redirect(`/register/entercode?id=${id._id}`)
-            } else {
+    if (verification.length === 0) { //Se não houver erros 
+        let id = await findCode(newUser.email) //Verifica se já existe um código de verificação para esse email
+        if (id) { // Caso exista o código de verificação para o email informado pelo usuário executa novas verificações
+            if (comparePasswords(newUser.password, id.password) && newUser.name === id.name) { // Verifica se a senha informada e o nome informado corresponde ao já salvo no banco de dados
+                res.redirect(`/register/entercode?id=${id._id}`) // Se sim, redireciona para a página que verifica o email
+            } else { // Se não, procura pela collection do código e edita o nome e senha para os informados no último acesso
                 Codes.findOne({email: id.email}, async (err, user) => {
                     if (err) throw err
                     user.password = await hashPassword(newUser.password)
@@ -41,12 +41,12 @@ router.post('/', async (req, res) => {
                     })
                 })
             }
-        } else {
-            newUser.password = await hashPassword(newUser.password)
-            let emailCode = Math.floor(Math.random() * 9000) + 1000
+        } else { // Caso ainda não exista um código para aquele email
+            newUser.password = await hashPassword(newUser.password) // Gera um hash de senha 
+            let emailCode = Math.floor(Math.random() * 9000) + 1000 // Gera um código aleatório entre 1000 e 9999
             emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
             newUser.code = emailCode
-            new Codes(newUser).save().then((code) => {
+            new Codes(newUser).save().then((code) => { // Salva as informações do usuário e o código de verificação
                 res.redirect(`/register/entercode?id=${code._id}`)
             }).catch((err) => {
                 console.log(err)
