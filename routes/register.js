@@ -57,38 +57,38 @@ router.post('/', async (req, res) => {
     } else {
         verification.map((e) => { //Adiciona um espaço para após a vírgula para separar os itens do array
             e = ' ' + e
-            req.flash('error', e)
+            req.flash('error', e) // Exibe os erros na mensagem flash
         })
-        res.redirect('./')
+        res.redirect('/register') //Redireciona para a página de registro onde os erros serão exibidos pelo flash
     }
 })
 //Verificação de nova conta por email (/register/entercode)
 router.get('/entercode', async (req, res) => {
-    let id = await findCodeById(req.query.id, true)
-    if (!id) res.redirect('/')
-    res.render('register/registeremail', {id})
+    let id = await findCodeById(req.query.id, true) // Espera o rotorno de um objeto com as informações do usuário e um código para verificar o email (.lean() ativado no segundo argumento)
+    if (!id) res.redirect('/') // Caso esse usuário não exista ou já tenha expirado redireciona para a home
+    res.render('register/registeremail', {id}) // Passa o objeto salvo na let id para o arquivo handlebars renderizado
 })
 router.post('/entercode', async (req, res, next) => {
-    let newUser = await findCodeById(req.body.id)
-    if (!newUser) {
+    let newUser = await findCodeById(req.body.id) // Recebe o id do formulário postado e procura um usuário e código no banco de dados
+    if (!newUser) { // Caso o usuário não exista ou tenha expirado exibe a mensagem de erro na página de registro
         req.flash('error', 'Tempo limite de servidor')
-        res.redirect('./')
-    } else {
-        if (req.body.code != newUser.code) {
+        res.redirect('/register')
+    } else { // Aninha as condições para garantir uma sintaxe que assegure o registro da conta com segurança
+        if (req.body.code != newUser.code) { // Verifica se o código inserido pelo usuário é o mesmo do e-mail
             req.flash('error', 'Código incorreto')
             res.redirect(`/register/entercode?id=${req.body.id}`)
-        } else {
-            newUser = {
+        } else { // Caso ocorra como esperado, dá início a validação da conta
+            newUser = { // Mantém somente as informações necessária no objeto
                 name: newUser.name,
                 email: newUser.email,
                 password: newUser.password
             }
-            if (await findUser(newUser.email)) {
+            if (await findUser(newUser.email)) { // Verifica se já existe uma conta com aquele e-mail
                 req.flash('error', 'Já existe uma conta com esse email')
                 res.redirect('/')
-            } else {
+            } else { // Por fim, ao passar por todas as verificações, o usuário é salvo no banco de dados
                 new Users(newUser).save().then(() => {
-                    try {
+                    try { // Se salvo com êxito, tenta iniciar a sessão com as informações do usuário 
                         passport.authenticate('local', { //Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
                             successRedirect: '/user/uploadprofileimg', //Em caso de sucesso redireciona o usuário para a home do site.
                             failureRedirect: '/login', //Em caso de falha redireciona para a página de login e exibe o erro.
@@ -96,8 +96,8 @@ router.post('/entercode', async (req, res, next) => {
                         })(req, res, next)
                     } catch (error) {
                         console.log(error)
-                        req.flash('error', 'Não foi possível fazer login')
-                        res.redirect('/user/uploadprofileimg')
+                        req.flash('error', 'Não foi possível fazer login automaticamente. Fique tranquilo, a sua conta foi salva. Tente fazer login.')
+                        res.redirect('/')
                     }
                 }).catch((err) => {
                     console.log('Erro ao salvar a conta: \n' + err)
