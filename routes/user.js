@@ -18,9 +18,8 @@ router.get('/', async (req, res) => {
 })
 //Edit (/edit)
 router.get('/edit', async (req, res) => {
-
-                                                                 // Terminar depois
-
+    const user = await findUser(req.session.passport.user, true)
+    res.render('user/edituser', {user})
 })
 //Exportações
 module.exports = router

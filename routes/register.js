@@ -4,8 +4,8 @@ const router = express.Router() // Função router do express que interliga as r
 const mongoose = require('mongoose')
 const passport = require('passport')
 //Config
-const emailNode = require('../config/nodemailer')
-const {hashPassword, comparePasswords} = require('../config/bcrypt')
+const emailNode = require('../config/nodemailer') // Função para envio de e-mail com os parâmetros (e-mail do remetente, assunto do e-mail, html enviado)
+const {hashPassword, comparePasswords} = require('../config/bcrypt') // Exporta funções que geram um hash e que comparam hashes do bcrypt
 //Helpers
 const {newAccountValidation} = require('../helpers/formsValidation')
 const {findUser, findCode, findCodeById} = require('../helpers/findSchema')

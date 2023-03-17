@@ -63,7 +63,7 @@ app.post('/login', (req, res, next) => {
 })
 //Logout
 app.get('/logout', (req, res) => {
-    req.logout(err => {
+    req.logout(err => { // Faz a requisição de logout do passport, recebe um erro, caso haja, como callback
         if (err) {
             console.error(err)
             req.flash('error', 'Não foi possível fazer o logout')

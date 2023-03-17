@@ -1,0 +1,7 @@
+<form action="/user/edit" method="post">
+    <label for="name">Nome:</label>
+    <input type="text" name="name" id="name" value="{{user.name}}">
+    <label for="email">E-mail</label>
+    <input type="email" name="email" id="email" value="{{user.email}}">
+    <a href="/user/newpassword">Mudar senha</a>
+</form>
