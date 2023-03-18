@@ -9,4 +9,18 @@
     imagem.addEventListener('click', () => {
         input.click()
     })
+    input.addEventListener('change', function() {
+    const file = this.files[0]
+    if (file) {
+        const reader = new FileReader()
+        reader.addEventListener('load', function() {
+        const image = new Image()
+        image.addEventListener('load', function() {
+            imagem.src = this.src
+        })
+        image.src = reader.result
+        })
+        reader.readAsDataURL(file)
+    }
+    })
 </script>
