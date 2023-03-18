@@ -88,18 +88,12 @@ router.post('/entercode', async (req, res, next) => {
                 res.redirect('/')
             } else { // Por fim, ao passar por todas as verificações, o usuário é salvo no banco de dados
                 new Users(newUser).save().then(() => {
-                    try { // Se salvo com êxito, tenta iniciar a sessão com as informações do usuário 
-                        passport.authenticate('local', { //Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
-                            successRedirect: '/user/uploadprofileimg', //Em caso de sucesso redireciona o usuário para a home do site.
-                            failureRedirect: '/login', //Em caso de falha redireciona para a página de login e exibe o erro.
-                            failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
-                        })(req, res, next)
-                    } catch (error) {
-                        console.log(error)
-                        req.flash('error', 'Não foi possível fazer login automaticamente. Fique tranquilo, a sua conta foi salva. Tente fazer login.')
-                        res.redirect('/')
-                    }
-                }).catch((err) => {
+                    passport.authenticate('local', { //Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
+                        successRedirect: '/user/profileimg', //Em caso de sucesso redireciona o usuário para a home do site.
+                        failureRedirect: '/login', //Em caso de falha redireciona para a página de login e exibe o erro.
+                        failureFlash: true //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
+                    })(req, res, next)
+                }).catch(err => {
                     console.log('Erro ao salvar a conta: \n' + err)
                     req.flash('error', 'Tempo limite de servidor')
                     res.redirect('/')

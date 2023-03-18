@@ -16,10 +16,23 @@ router.get('/', async (req, res) => {
     user.profileImg = await imgHash(user.profileImg)
     res.render('user/user', {user})
 })
+//Foto de perfil (/profileimg)
+router.get('/profileimg', (req, res) => {
+    res.render('user/profileimg')
+})
 //Edit (/edit)
 router.get('/edit', async (req, res) => {
     const user = await findUser(req.session.passport.user, true)
     res.render('user/edituser', {user})
+})
+router.post('/edit', async (req, res) => {
+    const user = await findUser(req.session.passport.user)
+    let editUser = {
+        name: req.body.name,
+        email: req.body.email
+    }
+    if (editUser.name === user.name && editUser.email === user.email) res.redirect('/user/edit')
+    //terminar depois
 })
 //Exportações
 module.exports = router

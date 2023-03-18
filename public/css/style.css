@@ -39,6 +39,9 @@ input {
     margin: 1% 0 2%;
     border-radius: 10px;
 }
+input[type="file"] {
+    display: none;
+}
 /*Popup*/
 .popup {
     position: fixed;
