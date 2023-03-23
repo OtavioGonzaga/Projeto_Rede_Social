@@ -1,6 +1,7 @@
 //Carregando módulos
 const express = require('express')
-const { default: mongoose } = require('mongoose')
+const mongoose = require('mongoose')
+const fs = require('fs')
 const router = express.Router()
 //Config
 const imgHash = require('../config/imageToBase64') //Importa uma função do arquivo especificado que trasforma uma imagem em string
@@ -30,6 +31,7 @@ router.get('/profileimg', async (req, res) => {
 router.post('/profileimg', upload.single('profileimg'), (req, res) => {
     if (!req.file) res.redirect('/user')
     Users.findOne({email: req.session.passport.user}).then((user) => {
+        let lastImg = user.profileImg
         user.profileImg = req.file.path
         user.save(err => {
             if (err) {
@@ -37,9 +39,22 @@ router.post('/profileimg', upload.single('profileimg'), (req, res) => {
                 req.flash('error', 'Houve um erro ao alterar a foto de perfil')
                 res.redirect('/user')
             } else {
-                // A antiga foto de perfil deve ser excluída na próxima versão
-                req.flash('success', 'Foto de perfil alterada com êxito')
-                res.redirect('/user')
+                if (lastImg === 'uploads/default.png') {
+                    req.flash('success', 'Foto de perfil alterada com êxito')
+                    res.redirect('/user')
+                } else {
+                    fs.unlink(`./${lastImg}`, err => {
+                        if (err) {
+                            console.log(err)
+                            req.flash('error', 'Houve um erro ao alterar a foto de perfil')
+                            res.redirect('/user')
+                        } else {
+                            req.flash('success', 'Foto de perfil alterada com êxito')
+                            res.redirect('/user')
+                        }
+                    })
+                }
+                
             }
         })
     }).catch((err) => {
