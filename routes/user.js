@@ -29,7 +29,7 @@ router.get('/profileimg', async (req, res) => {
     res.render('user/profileimg', {user})
 })
 router.post('/profileimg', upload.single('profileimg'), (req, res) => {
-    if (!req.file) res.redirect('/user')
+    if (!req.file) return res.redirect('/user')
     Users.findOne({email: req.session.passport.user}).then((user) => {
         let lastImg = user.profileImg
         user.profileImg = req.file.path
