@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 const Codes = new Schema({
     name: {
         type: String,
-        required: true
+        required: false
     },
     email: {
         type: String,
@@ -11,7 +11,7 @@ const Codes = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: false
     },
     code: {
         type: Number,

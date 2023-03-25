@@ -48,14 +48,14 @@ router.post('/', async (req, res) => {
             newUser.code = emailCode
             new Codes(newUser).save().then((code) => { // Salva as informações do usuário e o código de verificação
                 res.redirect(`/register/entercode?id=${code._id}`)
-            }).catch((err) => {
+            }).catch(err => {
                 console.log(err)
                 req.flash('error', 'Houve um erro ao fazer o cadastro')
                 res.redirect('/')
             })
         }
     } else {
-        verification.map((e) => { //Adiciona um espaço para após a vírgula para separar os itens do array
+        verification.map(e => { //Adiciona um espaço para após a vírgula para separar os itens do array
             e = ' ' + e
             req.flash('error', e) // Exibe os erros na mensagem flash
         })
