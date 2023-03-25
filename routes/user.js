@@ -78,7 +78,21 @@ router.post('/edit', async (req, res) => {
         email: req.body.email
     }
     if (editUser.name === user.name && editUser.email === user.email) res.redirect('/user')
-    if (editUser.name === user.name && editUser.email != user.email) {
+    if (editUser.name != user.name && editUser.email === user.email) {
+        Users.findOne({email: user.email}).then(user => {
+            user.name = editUser.name
+            user.save(err => {
+                if (err) {
+                    console.log(err)
+                    req.flash('error', 'Houve um erro ao editar as informações...')
+                    res.redirect('/user/edit')
+                }
+            })
+            req.flash('success', 'As informações foram editadas com êxito')
+            res.redirect('/user')
+        })
+    }
+    if (editUser.email != user.email) {
         let emailCode = Math.floor(Math.random() * 9000) + 1000 // Gera um código aleatório entre 1000 e 9999
         new Codes(editUser).save().then(code => {
             emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
