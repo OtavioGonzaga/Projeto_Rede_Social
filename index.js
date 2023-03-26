@@ -9,6 +9,8 @@ const session = require('express-session') //Sessão express (sistema de login)
 require('./config/auth')(passport) //Faz o requerimento do sistema de autenticação e invoca a a função de login através do argumento passport
 const app = express()
 require('dotenv').config()
+//Config
+const db = require('./config/db')
 //Helpers
 const {isAuthenticated} = require('./helpers/accessControl')
 //Sessão
@@ -35,7 +37,7 @@ app.use(express.json())
 //Mongoose
 mongoose.set('strictQuery', true)
     //Ao se conectar deve ser usado a string 'mongodb://0.0.0.0:27017' no lugar de 'mongodb://localhost:27017' em alguns dipositivos
-mongoose.connect('mongodb://0.0.0.0:27017/redeapp').then(() => console.log('Conectado ao MongoDB')).catch(err => console.log('Houve um erro ao se conectar ao MongoDB ' + err))
+mongoose.connect(db.mongoURI).then(() => console.log('Conectado ao MongoDB')).catch(err => console.log('Houve um erro ao se conectar ao MongoDB ' + err))
 //Handlebars
 app.engine('handlebars', handlebars.engine({defaultLayout: 'main', helpers: { //Default layout define qual será o nome do arquivo central do handlebars na pasta views/layouts. Helpers define quais serão os ajudadores
     FormatDate: date => { // Define o formato que a data será exibida nos arquivos .handlebars ao usar {{#formatDate date}}{{/formatDate}}
