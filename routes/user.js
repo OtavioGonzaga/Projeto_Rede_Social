@@ -42,11 +42,11 @@ router.post('/profileimg', upload.single('profileimg'), (req, res) => {
                 req.flash('error', 'Houve um erro ao alterar a foto de perfil')
                 res.redirect('/user')
             } else {
-                if (lastImg === 'uploads/default.png') {
+                if (lastImg === 'uploads/default.png' || lastImg === 'uploads\default.png') {
                     req.flash('success', 'Foto de perfil alterada com êxito')
                     res.redirect('/user')
                 } else {
-                    fs.unlink(`./${lastImg}`, err => {
+                    fs.unlink(`${lastImg}`, err => {
                         if (err) {
                             console.log(err)
                             req.flash('error', 'Houve um erro ao alterar a foto de perfil')
