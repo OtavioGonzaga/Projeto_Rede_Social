@@ -33,7 +33,7 @@ router.get('/profileimg', async (req, res) => {
 })
 router.post('/profileimg', upload.single('profileimg'), (req, res) => {
     if (!req.file) return res.redirect('/user')
-    Users.findOne({email: req.session.passport.user}).then((user) => {
+    Users.findOne({email: req.session.passport.user}).then(user => {
         let lastImg = user.profileImg
         user.profileImg = req.file.path
         user.save(err => {
@@ -45,25 +45,23 @@ router.post('/profileimg', upload.single('profileimg'), (req, res) => {
                 if (lastImg === 'uploads/default.png' || lastImg === 'uploads\default.png') {
                     req.flash('success', 'Foto de perfil alterada com êxito')
                     res.redirect('/user')
-                } else {
-                    fs.unlink(`${lastImg}`, err => {
-                        if (err) {
-                            console.log(err)
-                            req.flash('error', 'Houve um erro ao alterar a foto de perfil')
-                            res.redirect('/user')
-                        } else {
-                            req.flash('success', 'Foto de perfil alterada com êxito')
-                            res.redirect('/user')
-                        }
-                    })
                 }
-                
             }
         })
     }).catch(err => {
         console.log(err)
         req.flash('error', 'Houve um erro ao alterar a foto de perfil')
         res.redirect('/user')
+    })
+    fs.unlink(`${lastImg}`, err => {
+        if (err) {
+            console.log(err)
+            req.flash('error', 'Houve um erro ao alterar a foto de perfil')
+            res.redirect('/user')
+        } else {
+            req.flash('success', 'Foto de perfil alterada com êxito')
+            res.redirect('/user')
+        }
     })
 })
 //Edit (/edit)
