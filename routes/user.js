@@ -23,46 +23,34 @@ DataAtt = new Date()
 //Conta (/)
 router.get('/', async (req, res) => {
     const user = await findUser(req.session.passport.user, true)
-    user.profileImg = await imgHash(user.profileImg)
     res.render('user/user', {user})
 })
 //Foto de perfil (/profileimg)
 router.get('/profileimg', async (req, res) => {
     const user = await findUser(req.session.passport.user, true)
-    user.profileImg = await imgHash(user.profileImg)
     res.render('user/profileimg', {user})
 })
 router.post('/profileimg', upload.single('profileimg'), (req, res) => {
     if (!req.file) return res.redirect('/user')
-    Users.findOne({email: req.session.passport.user}).then(user => {
-        let lastImg = user.profileImg
-        user.profileImg = req.file.path
+    Users.findOne({email: req.session.passport.user}).then(async user => {
+        user.profileImg = 'https://drive.google.com/uc?export=view&id=' + await uploadFile(req.file.filename, req.file.path)
         user.save(err => {
             if (err) {
                 console.log(err)
                 req.flash('error', 'Houve um erro ao alterar a foto de perfil')
                 res.redirect('/user')
             } else {
-                if (lastImg === 'uploads/default.png' || lastImg === 'uploads\default.png') {
-                    req.flash('success', 'Foto de perfil alterada com êxito')
-                    res.redirect('/user')
-                }
+                fs.unlink(req.file.path, err => {
+                    if (err) console.log(err)
+                })
+                req.flash('success', 'Foto de perfil alterada com êxito')
+                res.redirect(('/user'))
             }
         })
     }).catch(err => {
         console.log(err)
         req.flash('error', 'Houve um erro ao alterar a foto de perfil')
         res.redirect('/user')
-    })
-    fs.unlink(`${lastImg}`, err => {
-        if (err) {
-            console.log(err)
-            req.flash('error', 'Houve um erro ao alterar a foto de perfil')
-            res.redirect('/user')
-        } else {
-            req.flash('success', 'Foto de perfil alterada com êxito')
-            res.redirect('/user')
-        }
     })
 })
 //Edit (/edit)

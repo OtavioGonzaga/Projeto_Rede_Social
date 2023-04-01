@@ -1,5 +1,5 @@
 <form method="post" enctype="multipart/form-data">
-    <img class="g-profileimg" src="data:image/png;base64,{{user.profileImg}}" alt="">
+    <img class="g-profileimg" src="{{user.profileImg}}" alt="">
     <label for="profileimg"><i class="bi bi-camera"></i></label>
     <input type="file" name="profileimg" accept="image/*" id="profileimg">
     <button type="submit">Alterar foto</button>
