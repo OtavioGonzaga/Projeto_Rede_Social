@@ -1,5 +1,5 @@
 <form method="post" enctype="multipart/form-data">
-    <img class="g-profileimg" src="{{user.profileImg}}" alt="" style="cursor: pointer">
+    <img class="g-profileimg" src="https://drive.google.com/uc?export=view&id={{user.profileImg}}" alt="" style="cursor: pointer">
     <label for="profileimg"><i class="bi bi-camera"></i></label>
     <input type="file" name="profileimg" accept="image/*" id="profileimg">
     <button type="submit">Alterar foto</button>
@@ -10,18 +10,18 @@
     imagem.addEventListener('click', () => {
         input.click()
     })
-    input.addEventListener('change', () => {
-    const file = this.files[0]
-    if (file) {
-        const reader = new FileReader()
-        reader.addEventListener('load', () => {
-        const image = new Image()
-        image.addEventListener('load', () => {
-            imagem.src = this.src
-        })
-        image.src = reader.result
-        })
-        reader.readAsDataURL(file)
-    }
+    input.addEventListener('change', function () {
+        const file = this.files[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.addEventListener('load', () => {
+            const image = new Image()
+            image.addEventListener('load', function () {
+                imagem.src = this.src
+            })
+            image.src = reader.result
+            })
+            reader.readAsDataURL(file)
+        }
     })
 </script>

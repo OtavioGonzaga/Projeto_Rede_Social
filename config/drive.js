@@ -30,4 +30,16 @@ async function uploadFile(fileName, path) {
         return false
     }
 }
-module.exports = uploadFile
+async function deleteFile(fileId) {
+    driveService.files.delete({fileId}, err => {
+        if (err) {
+          console.log('Erro ao excluir arquivo:\n'  + err)
+          return false
+        }
+        return true
+      })
+}
+module.exports = {
+    uploadFile,
+    deleteFile
+}

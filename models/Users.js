@@ -19,7 +19,7 @@ const Users = new Schema({
     },
     profileImg: {
         type: String,
-        default: "https://drive.google.com/uc?export=view&id=1qpzBq_HyWZb_Mfp_5OebVxf8U2qqA67I"
+        default: "1qpzBq_HyWZb_Mfp_5OebVxf8U2qqA67I"
     }
 })
 mongoose.model('users', Users)

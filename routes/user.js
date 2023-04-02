@@ -5,7 +5,7 @@ const fs = require('fs')
 const router = express.Router()
 //Config
 const upload = require('../config/multer')
-const uploadFile = require('../config/drive')
+const {uploadFile, deleteFile} = require('../config/drive')
 const {emailNode} = require('../config/nodemailer')
 //Helpers
 const {findUser} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
@@ -32,19 +32,26 @@ router.get('/profileimg', async (req, res) => {
 router.post('/profileimg', upload.single('profileimg'), (req, res) => {
     if (!req.file) return res.redirect('/user') // caso não seja enviado nenhum arquivo o usuário é redirecionado para /user
     Users.findOne({email: req.session.passport.user}).then(async user => {
-        user.profileImg = 'https://drive.google.com/uc?export=view&id=' + await uploadFile(req.file.filename, req.file.path) // Concatena uma url incompleta com o id da foto enviada ao drive pela função uploadFile()
+        let lastImg = user.profileImg
+        user.profileImg = await uploadFile(req.file.filename, req.file.path) // Concatena uma url incompleta com o id da foto enviada ao drive pela função uploadFile()
         user.save(err => {
-            if (err) {
+            deleteFile(lastImg).then(() => {
+                if (err) {
+                    console.log(err)
+                    req.flash('error', 'Houve um erro ao alterar a foto de perfil')
+                    res.redirect('/user')
+                } else {
+                    fs.unlink(req.file.path, err => {
+                        if (err) console.log(err)
+                    })
+                    req.flash('success', 'Foto de perfil alterada com êxito')
+                    res.redirect(('/user'))
+                }
+            }).catch((err) => {
                 console.log(err)
-                req.flash('error', 'Houve um erro ao alterar a foto de perfil')
-                res.redirect('/user')
-            } else {
-                fs.unlink(req.file.path, err => {
-                    if (err) console.log(err)
-                })
                 req.flash('success', 'Foto de perfil alterada com êxito')
-                res.redirect(('/user'))
-            }
+                res.redirect('/user')
+            })  
         })
     }).catch(err => {
         console.log(err)
