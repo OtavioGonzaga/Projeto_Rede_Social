@@ -1,5 +1,7 @@
-<img class="g-profileimg" src="{{user.profileImg}}" alt="">
-<a href="/user/profileimg"><i class="bi bi-camera"></i></a>
+<a href="/user/profileimg">
+    <img class="g-profileimg" src="{{user.profileImg}}" alt="">
+    <i class="bi bi-camera"></i>
+</a>
 <h2>{{user.name}} {{#if user.isAdm}}
     (Administrador)
 {{/if}}</h2>

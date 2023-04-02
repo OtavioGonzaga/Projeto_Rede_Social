@@ -4,7 +4,6 @@ const mongoose = require('mongoose')
 const fs = require('fs')
 const router = express.Router()
 //Config
-const imgHash = require('../config/imageToBase64') //Importa uma função do arquivo especificado que trasforma uma imagem em string
 const upload = require('../config/multer')
 const uploadFile = require('../config/drive')
 const {emailNode} = require('../config/nodemailer')
@@ -31,9 +30,9 @@ router.get('/profileimg', async (req, res) => {
     res.render('user/profileimg', {user})
 })
 router.post('/profileimg', upload.single('profileimg'), (req, res) => {
-    if (!req.file) return res.redirect('/user')
+    if (!req.file) return res.redirect('/user') // caso não seja enviado nenhum arquivo o usuário é redirecionado para /user
     Users.findOne({email: req.session.passport.user}).then(async user => {
-        user.profileImg = 'https://drive.google.com/uc?export=view&id=' + await uploadFile(req.file.filename, req.file.path)
+        user.profileImg = 'https://drive.google.com/uc?export=view&id=' + await uploadFile(req.file.filename, req.file.path) // Concatena uma url incompleta com o id da foto enviada ao drive pela função uploadFile()
         user.save(err => {
             if (err) {
                 console.log(err)
