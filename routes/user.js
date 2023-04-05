@@ -6,9 +6,9 @@ const router = express.Router()
 //Config
 const upload = require('../config/multer')
 const {uploadFile, deleteFile} = require('../config/drive')
-const {emailNode} = require('../config/nodemailer')
+const emailNode = require('../config/nodemailer')
 //Helpers
-const {findUser} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
+const {findUser, findCode} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
 //Acessando bancos de dados
 require('../models/Users')
 const Users = mongoose.model('users')
@@ -35,21 +35,18 @@ router.post('/profileimg', upload.single('profileimg'), (req, res) => {
         let lastImg = user.profileImg
         user.profileImg = await uploadFile(req.file.filename, req.file.path) // Concatena uma url incompleta com o id da foto enviada ao drive pela função uploadFile()
         user.save(err => {
-            deleteFile(lastImg).then(() => {
-                if (err) {
-                    console.log(err)
-                    req.flash('error', 'Houve um erro ao alterar a foto de perfil')
-                    res.redirect('/user')
-                } else {
-                    fs.unlink(req.file.path, err => {
-                        if (err) console.log(err)
-                    })
-                    req.flash('success', 'Foto de perfil alterada com êxito')
-                    res.redirect(('/user'))
-                }
-            }).catch((err) => {
+            if (err) {
                 console.log(err)
+                req.flash('error', 'Houve um erro ao alterar a foto de perfil')
+                res.redirect('/user')
+            }
+            deleteFile(lastImg).then(() => {
+                fs.unlink(req.file.path)
                 req.flash('success', 'Foto de perfil alterada com êxito')
+                res.redirect(('/user'))
+            }).catch(err => {
+                console.log(err)
+                req.flash('success', 'Nova foto de perfil adicionada')
                 res.redirect('/user')
             })  
         })
@@ -86,11 +83,21 @@ router.post('/edit', async (req, res) => {
         })
     }
     if (editUser.email != user.email) {
-        let emailCode = Math.floor(Math.random() * 9000) + 1000 // Gera um código aleatório entre 1000 e 9999
-        new Codes(editUser).save().then(code => {
-            emailNode(newUser.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${emailCode}</h2></div>`)
-            res.redirect(`/user/entercode?id=${code._id}`)
-        })
+        const code = await findCode(editUser.email)
+        if (code) {
+            res.redirect('/user/entercode?id=' + code.id)
+        } else {
+            editUser.code = Math.floor(Math.random() * 9000) + 1000 // Gera um código aleatório entre 1000 e 9999
+            new Codes(editUser).save().then(async code => {
+                if (await emailNode(code.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${code.code}</h2></div>`)) {
+                    res.redirect(`/user/entercode?id=${code._id}`)
+                } else {
+                    req.flash('error', 'Houve um erro ao editar as informações')
+                    res.redirect('/user')
+                }
+            })
+        }
+
     }
 })
 //Exportações
