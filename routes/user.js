@@ -5,6 +5,7 @@ const fs = require('fs')
 const router = express.Router()
 //Config
 const upload = require('../config/multer')
+const resizeImg = require('../config/sharp')
 const {uploadFile, deleteFile} = require('../config/drive')
 const emailNode = require('../config/nodemailer')
 //Helpers
@@ -32,28 +33,8 @@ router.get('/profileimg', async (req, res) => {
 router.post('/profileimg', upload.single('profileimg'), (req, res) => {
     if (!req.file) return res.redirect('/user') // caso não seja enviado nenhum arquivo o usuário é redirecionado para /user
     Users.findOne({email: req.session.passport.user}).then(async user => {
-        let lastImg = user.profileImg
-        user.profileImg = await uploadFile(req.file.filename, req.file.path) // Concatena uma url incompleta com o id da foto enviada ao drive pela função uploadFile()
-        user.save(err => {
-            if (err) {
-                console.log(err)
-                req.flash('error', 'Houve um erro ao alterar a foto de perfil')
-                res.redirect('/user')
-            }
-            deleteFile(lastImg).then(() => {
-                fs.unlink(req.file.path)
-                req.flash('success', 'Foto de perfil alterada com êxito')
-                res.redirect(('/user'))
-            }).catch(err => {
-                console.log(err)
-                req.flash('success', 'Nova foto de perfil adicionada')
-                res.redirect('/user')
-            })  
-        })
-    }).catch(err => {
-        console.log(err)
-        req.flash('error', 'Houve um erro ao alterar a foto de perfil')
-        res.redirect('/user')
+        const lastImg = user.profileImg
+        const resize = resizeImg(req.file.path)
     })
 })
 //Edit (/edit)

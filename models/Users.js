@@ -19,7 +19,7 @@ const Users = new Schema({
     },
     profileImg: {
         type: String,
-        default: "1qpzBq_HyWZb_Mfp_5OebVxf8U2qqA67I"
+        default: "11tqyHXrESerO4EEUsxyIltAFqKIYXM2SQ"
     }
 })
 mongoose.model('users', Users)

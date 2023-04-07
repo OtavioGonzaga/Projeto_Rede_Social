@@ -5,10 +5,7 @@ const auth = new GoogleApis.google.auth.GoogleAuth({
     keyFile: 'redeapp-uploads-80dd72a4c84e.json',
     scopes: ['https://www.googleapis.com/auth/drive']
 })
-const driveService = GoogleApis.google.drive({
-    version: 'v3',
-    auth
-})
+const driveService = GoogleApis.google.drive({version: 'v3', auth})
 async function uploadFile(fileName, path) {
     try {
         const fileMetaData = {
@@ -16,8 +13,8 @@ async function uploadFile(fileName, path) {
             'parents': [process.env.FOLDERID]
         }
         const media = {
-            mimeType: 'image/*',
-            body: fs.createReadStream(path)
+            mimeType: 'image/jpeg',
+            body: await fs.createReadStream(path)
         }
         const response = await driveService.files.create({
             resource: fileMetaData,
@@ -30,14 +27,10 @@ async function uploadFile(fileName, path) {
         return false
     }
 }
-async function deleteFile(fileId) {
+function deleteFile(fileId) {
     driveService.files.delete({fileId}, err => {
-        if (err) {
-          console.log('Erro ao excluir arquivo:\n'  + err)
-          return false
-        }
-        return true
-      })
+        if (err) console.log('Erro ao excluir arquivo:\n'  + err)
+    })
 }
 module.exports = {
     uploadFile,
