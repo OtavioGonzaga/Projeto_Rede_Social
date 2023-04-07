@@ -14,14 +14,15 @@ async function uploadFile(fileName, path) {
         }
         const media = {
             mimeType: 'image/jpeg',
-            body: await fs.createReadStream(path)
+            body: fs.createReadStream(path)
         }
         const response = await driveService.files.create({
             resource: fileMetaData,
             media: media,
             fields: 'id'
         })
-        return response.data.id
+        console.log(response)
+        return await response.data.id
     } catch (error) {
         console.log('Erro de upload no drive: \n' + error)
         return false
