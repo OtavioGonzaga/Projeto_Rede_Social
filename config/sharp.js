@@ -1,13 +1,12 @@
 const sharp = require('sharp')
-function resizeImg (imgPath) {
+module.exports = async imgPath => {
     let num = Date.now()
     let output = {
         name: `${num}.jpeg`,
-        path: `uploads/${num}.jpeg`
+        path: `uploads\\${num}.jpeg`
     }
-    sharp(imgPath).resize(854, 854).toFormat('jpeg').jpeg({ quality: 20 }).toFile(output.path, (err, info) => {
-        if (err) console.log('Erro sharp:\n' + err)
-    })
-    return output
+    const out = await sharp(imgPath).resize(854, 854).toFormat('jpeg').jpeg({ quality: 20 }).toFile(output.path).then(() => {
+        return output
+    }).catch(err => console.log(err))
+    return out
 }
-module.exports = resizeImg

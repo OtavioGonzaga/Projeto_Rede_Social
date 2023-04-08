@@ -21,8 +21,7 @@ async function uploadFile(fileName, path) {
             media: media,
             fields: 'id'
         })
-        console.log(response)
-        return await response.data.id
+        return response.data.id
     } catch (error) {
         console.log('Erro de upload no drive: \n' + error)
         return false
