@@ -9,6 +9,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: useremail,
         pass: userpass
+    },
+    tls: {
+        rejectUnauthorized: false // Desativar a verificação de certificado
     }
 })
 async function emailNode(addressee, subject, html) {
@@ -22,7 +25,7 @@ async function emailNode(addressee, subject, html) {
         })
         return true
     } catch (error) {
-        console.log(error)
+        console.log('Erro ao enviar e-mail:\n' + error)
         return false
     }
 }

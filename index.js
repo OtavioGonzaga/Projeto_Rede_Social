@@ -10,7 +10,7 @@ require('./config/auth')(passport) //Faz o requerimento do sistema de autentica√
 const app = express()
 require('dotenv').config()
 //Config
-const db = require('./config/db').mongoLocal
+const db = require('./config/db').mongoURI
 //Helpers
 const {isAuthenticated} = require('./helpers/accessControl')
 //Sess√£o
