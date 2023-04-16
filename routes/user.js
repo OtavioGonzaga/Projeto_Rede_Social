@@ -9,9 +9,10 @@ const upload = require('../config/multer')
 const resizeImg = require('../config/sharp')
 const {uploadFile, deleteFile} = require('../config/drive')
 const emailNode = require('../config/nodemailer')
+const {hashPassword, comparePasswords} = require('../config/bcrypt')
 //Helpers
 const {findUser, findCode, findCodeById} = require('../helpers/findSchema') //Importa uma função que busca os usuários, passando o email no primeiro argumento, e retorna usando o lean() ou não dependendo se o segundo argumento é true ou false (caso não seja passado será false)
-
+const {passwordVerification} = require('../helpers/formsValidation')
 //Acessando bancos de dados
 require('../models/Users')
 const Users = mongoose.model('users')
@@ -114,6 +115,49 @@ router.post('/edit', async (req, res) => {
         res.redirect('/user/edit')
     }
 })
+//newpassword (/newpassword)
+router.get('/newpassword', (req, res)  => {
+    res.render('user/newpassword')
+})
+router.post('/newpassword', async (req, res) => {
+    const alt = {
+        lastpassword: req.body.password,
+        newpassword: req.body.newpassword,
+        newpassword2: req.body.newpassword2
+    }
+    if(await comparePasswords(alt.lastpassword, req.user.password)) {
+        const errors = passwordVerification(alt.newpassword, alt.newpassword2)
+        if (errors.length != 0) {
+            errors.map(e => {
+                e = " " + e
+                req.flash('error', e)
+            })
+            res.redirect('/user/newpassword')
+        } else {
+            const newpassword = await hashPassword(alt.newpassword)
+            Users.findOne({email: req.user.email}).then(user => {
+                user.password = newpassword
+                user.save(err => {
+                    if (err) {
+                        console.log(err)
+                        req.flash('error', 'Houve um erro ao salvar a nova senha')
+                        res.redirect('/user/newpassword')
+                    } else {
+                        req.flash('success', 'Senha alterada com sucesso')
+                        res.redirect('/user')
+                    }
+                })
+            }).catch(err => {
+                console.log(err)
+                req.flash('error', 'Houve um erro interno ao salvar a senha')
+                res.redirect('/user')
+            })
+        }
+    } else {
+        req.flash('error', 'Verifique a senha e tente novamente')
+        res.redirect('/user/newpassword')
+    }
+})
 //Entercode (/entercode)
 router.get('/entercode', async (req, res) => {
     const id =  await findCodeById(req.query.id, true)
@@ -121,21 +165,24 @@ router.get('/entercode', async (req, res) => {
 })
 router.post('/entercode', async (req, res, next) => {
     const code = await findCodeById(req.body.id)
+    if (!code) {
+        req.flash('error', 'Houve um erro ao editar as informações')
+        return res.redirect('/user')
+    }
     if (code.code == req.body.code) {
         Users.findOne({email: req.session.passport.user}).then(async user => {
             if (!user) return res.redirect('/')
             user.email = req.body.email
-            user.save(err => {
+            user.save(async err => {
                 if (err) {
                     console.log(err)
                     req.flash('error', 'Houve um erro ao editar as informações')
                     return res.redirect('/user')
                 }
-                passport.authenticate('local', { //Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
-                    successRedirect: '/user', //Em caso de sucesso redireciona o usuário para a home do site.
-                    failureRedirect: '/login', //Em caso de falha redireciona para a página de login e exibe o erro.
-                    failureFlash: 'Erro ao iniciar a sessão, faça login novamente', //Ativa as mensagens do connect-flash e exibe o texto passado através de um objeto {message: 'mensagem'} como argumento em um erro em config/auth.js. Para isso é necessário criar um middleware do connect-flash chamado 'error' (em variável global do node)
-                    successFlash: 'Informções editadas com sucesso'
+                passport.authenticate('local', {
+                    failureFlash: true,
+                    failureRedirect: '/',
+                    successRedirect: '/user'
                 })(req, res, next)
             })
         }).catch(err => {
