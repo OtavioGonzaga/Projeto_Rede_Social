@@ -24,6 +24,6 @@ async function findCodeById(id, lean) {
 module.exports = {
     findUser,
     findCode,
-    findCodeById
+    findCodeById,
     //exporte as novas funções
 }

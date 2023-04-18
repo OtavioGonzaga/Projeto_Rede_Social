@@ -9,16 +9,23 @@ const session = require('express-session') //Sessão express (sistema de login)
 require('./config/auth')(passport) //Faz o requerimento do sistema de autenticação e invoca a a função de login através do argumento passport
 const app = express()
 require('dotenv').config()
+//Banco de dados
+require('./models/Codes')
+const Codes = mongoose.model('codes')
+require('./models/Users')
+const Users = mongoose.model('users')
 //Config
+const emailNode = require('./config/nodemailer')
 const db = require('./config/db').mongoURI
 //Helpers
+const {findUser, findCode} = require('./helpers/findSchema')
 const {isAuthenticated} = require('./helpers/accessControl')
 //Sessão
 app.use(session({
     secret: process.env.SECRET,
     resave: true,
     saveUninitialized: true,
-    cookie: {maxAge: 24 * 60 * 60 * 1000}
+    cookie: {maxAge: 7 * 24 * 60 * 60 * 1000}
 }))
 app.use(passport.initialize())
 app.use(passport.session())
@@ -57,9 +64,7 @@ app.get('/', (req, res) => {
     res.render('index.handlebars')
 })
 //Login (/login)
-app.get('/login', (req, res) => {
-    res.render('login')
-})
+app.get('/login', (req, res) => res.render('login'))
 app.post('/login', (req, res, next) => {
     passport.authenticate('local', { //Informa o passport que a estratégia de autenticação é a local, em seguida passa um objeto com informações do que fazer após a tentativa de autenticação.
         successRedirect: '/', //Em caso de sucesso redireciona o usuário para a home do site.
@@ -79,6 +84,31 @@ app.get('/logout', (req, res) => {
             res.redirect('/')
         }
     })
+})
+//Forgetpassword (/forgetpassword)
+app.get('/forgetpassword', (req, res) => res.render('forgetpassword'))
+app.post('/forgetpassword', async (req, res) => {
+    let code = await findCode(req.body.email)
+    if (code) {
+        // Se der certo
+    } else {
+        let newCode = {
+            email: req.body.email,
+            code: Math.floor(Math.random() * 9000) + 1000 // Gera um código aleatório entre 1000 e 9999
+        }
+        if (await emailNode(newCode.email, 'Código de redefinição de senha', `<p>Use esse código de verificação para dar continuidade com a redefinição de senha:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${newCode.code}</h2></div>`)) {
+        new Codes(newCode).save().then(code => {
+            console.log(code)
+        })
+    } else {
+        req.flash('error', 'Houve um erro ao redefinir a senha')
+        res.redirect('./')
+    }
+    }
+
+})
+app.post('/forgetpassword', (req,res) => {
+
 })
 //user(importando '/user')
 const user = require('./routes/user')

@@ -102,7 +102,7 @@ router.post('/edit', async (req, res) => {
         } else {
             editUser.code = Math.floor(Math.random() * 9000) + 1000 // Gera um código aleatório entre 1000 e 9999
             new Codes(editUser).save().then(async code => {
-                if (await emailNode(code.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a criação da conta:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${code.code}</h2></div>`)) {
+                if (await emailNode(code.email, 'Código de verificação', `<p>Use esse código de verificação para dar continuidade com a mudança de e-mail:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${code.code}</h2></div>`)) {
                     res.redirect(`/user/entercode?id=${code._id}`)
                 } else {
                     req.flash('error', 'Houve um erro ao editar as informações')
