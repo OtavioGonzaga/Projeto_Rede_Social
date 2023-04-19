@@ -85,31 +85,9 @@ app.get('/logout', (req, res) => {
         }
     })
 })
-//Forgetpassword (/forgetpassword)
-app.get('/forgetpassword', (req, res) => res.render('forgetpassword'))
-app.post('/forgetpassword', async (req, res) => {
-    let code = await findCode(req.body.email)
-    if (code) {
-        // Se der certo
-    } else {
-        let newCode = {
-            email: req.body.email,
-            code: Math.floor(Math.random() * 9000) + 1000 // Gera um código aleatório entre 1000 e 9999
-        }
-        if (await emailNode(newCode.email, 'Código de redefinição de senha', `<p>Use esse código de verificação para dar continuidade com a redefinição de senha:</p><div style="text-align: center"><h2 style="letter-spacing: 3px">${newCode.code}</h2></div>`)) {
-        new Codes(newCode).save().then(code => {
-            console.log(code)
-        })
-    } else {
-        req.flash('error', 'Houve um erro ao redefinir a senha')
-        res.redirect('./')
-    }
-    }
-
-})
-app.post('/forgetpassword', (req,res) => {
-
-})
+//forgetpassword (importando '/forgetpassword')
+const forgetpassword = require('./routes/forgetpassword')
+app.use('/forgetpassword', forgetpassword)
 //user(importando '/user')
 const user = require('./routes/user')
 app.use('/user', isAuthenticated, user)
