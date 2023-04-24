@@ -16,7 +16,7 @@ require('./models/Users')
 const Users = mongoose.model('users')
 //Config
 const emailNode = require('./config/nodemailer')
-const db = require('./config/db').mongoURI
+const db = require('./config/db').mongoLocal
 //Helpers
 const {findUser, findCode} = require('./helpers/findSchema')
 const {isAuthenticated} = require('./helpers/accessControl')
