@@ -17,7 +17,7 @@ router.get('/', (req, res) => res.render('forgetpassword/forgetpassword'))
 router.post('/', async (req, res) => {
     if (!await findUser(req.body.email)) {
         req.flash('error', 'Não existe nenhuma conta com esse e-mail')
-        res.redirect('/')
+        res.redirect('/forgetpassword')
     } else {
         let code = await findCode(req.body.email)
         if (code) {
@@ -72,7 +72,7 @@ router.post('/newpassword', async (req, res) => {
                         req.flash('error', 'Houve um erro ao alterar a senha')
                         res.redirect('/')
                     } else {
-                        req.flash('success', 'Senha alterada com êxito')
+                        req.flash('success', 'Senha alterada com êxito, faça login para continuar')
                         res.redirect('/login')
                     }
                 })
@@ -83,4 +83,5 @@ router.post('/newpassword', async (req, res) => {
             })
         }
 })
+//exportações
 module.exports = router

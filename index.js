@@ -91,9 +91,12 @@ app.use('/forgetpassword', forgetpassword)
 //user(importando '/user')
 const user = require('./routes/user')
 app.use('/user', isAuthenticated, user)
-//Register(importando '/register)
+//Register(importando '/register')
 const register = require('./routes/register')
 app.use('/register', register)
+//posts(importando '/posts')
+const posts = require('./routes/posts')
+app.use('posts', posts)
 //Conexão
 const port = process.env.PORT || 3000
 app.listen(port, () => console.log(`Servidor ativo na porta ${port}`))
