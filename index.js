@@ -10,15 +10,9 @@ require('./config/auth')(passport) //Faz o requerimento do sistema de autentica�
 const app = express()
 require('dotenv').config()
 //Banco de dados
-require('./models/Codes')
-const Codes = mongoose.model('codes')
-require('./models/Users')
-const Users = mongoose.model('users')
 //Config
-const emailNode = require('./config/nodemailer')
 const db = require('./config/db').mongoLocal
 //Helpers
-const {findUser, findCode} = require('./helpers/findSchema')
 const {isAuthenticated} = require('./helpers/accessControl')
 //Sessão
 app.use(session({
@@ -96,7 +90,7 @@ const register = require('./routes/register')
 app.use('/register', register)
 //posts(importando '/posts')
 const posts = require('./routes/posts')
-app.use('posts', posts)
+app.use('/posts', isAuthenticated , posts)
 //Conexão
 const port = process.env.PORT || 3000
 app.listen(port, () => console.log(`Servidor ativo na porta ${port}`))

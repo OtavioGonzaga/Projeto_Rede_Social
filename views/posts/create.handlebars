@@ -1,0 +1,27 @@
+<form action="" method="post">
+    <label for="description">Decrição:</label>
+    <input type="text" name="description" id="description">
+    <img src="img/addimg.png" class="full">
+    <input type="file" name="img" id="img">
+</form>
+<script>
+    const imagem = document.querySelector('img')
+    const input = document.getElementById('img')
+    imagem.addEventListener('click', () => {
+        input.click()
+    })
+    input.addEventListener('change', function () {
+        const file = this.files[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.addEventListener('load', () => {
+            const image = new Image()
+            image.addEventListener('load', function () {
+                imagem.src = this.src
+            })
+            image.src = reader.result
+            })
+            reader.readAsDataURL(file)
+        }
+    })
+</script>
